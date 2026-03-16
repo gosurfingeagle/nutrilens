@@ -17,7 +17,6 @@
                       radial-gradient(ellipse at 80% 100%, rgba(110,224,255,0.05) 0%, transparent 50%); }
   .app { max-width: 480px; margin: 0 auto; padding: 0 16px 80px; }
 
-  /* Header */
   .header { padding: 24px 0 18px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
   .logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 3px; }
   .logo-dot { color: var(--accent); }
@@ -26,7 +25,7 @@
 
   /* Tabs */
   .tabs { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin-bottom: 20px; gap: 4px; }
-  .tab { flex: 1; padding: 10px 8px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
+  .tab { flex: 1; padding: 10px 4px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
   .tab.active { background: var(--bg); color: var(--text); }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
@@ -42,49 +41,36 @@
   .fill-green { background: var(--accent); }
   .fill-blue { background: var(--accent2); }
 
-  /* Error */
   .error-box { background: rgba(255,110,110,0.08); border: 1px solid rgba(255,110,110,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; line-height: 1.7; }
 
-  /* API prompt */
-  .api-prompt { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; }
-  .api-prompt-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-  .api-prompt-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.8; }
-  .api-steps { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
-  .api-steps p { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
-  .api-steps ol { padding-left: 18px; }
-  .api-steps li { font-size: 13px; color: var(--text); margin-bottom: 6px; line-height: 1.6; }
-  .api-steps a { color: var(--accent2); }
-  .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; }
-  .input-field:focus { border-color: var(--accent); }
-  .api-row { display: flex; gap: 8px; }
-  .api-save-btn { flex: 1; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
-  .api-clear-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
-  .api-note { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; }
-  .api-note a { color: var(--accent2); }
-
-  /* Upload */
-  .upload-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 32px 20px; text-align: center; margin-bottom: 16px; display: none; }
-  .upload-icon { font-size: 38px; margin-bottom: 10px; }
-  .upload-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 5px; }
-  .upload-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
-  .upload-actions { display: flex; gap: 10px; justify-content: center; }
-  input[type="file"] { display: none; }
-  .btn { padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; }
+  /* Action buttons */
+  .action-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .btn { padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; }
   .btn:active { opacity: 0.8; }
   .btn-primary { background: var(--accent); color: #0a0a0f; }
   .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
   .btn-orange { background: var(--accent3); color: #0a0a0f; }
   .btn-sm { font-size: 11px; padding: 6px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  input[type="file"] { display: none; }
 
-  /* Manual input */
-  .manual-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 16px; display: none; }
-  .manual-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-  .manual-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  /* Upload zone */
+  .upload-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 32px 20px; text-align: center; margin-bottom: 16px; display: none; }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+  .upload-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .upload-actions { display: flex; gap: 10px; justify-content: center; }
+
+  /* Manual box */
+  .manual-box { background: var(--card); border: 1px solid var(--accent3); border-radius: 20px; padding: 20px; margin-bottom: 16px; display: none; }
+  .manual-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .manual-hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.7; }
+  .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; }
+  .input-field:focus { border-color: var(--accent); }
+  .manual-row { display: flex; gap: 8px; }
   .manual-row .input-field { margin-bottom: 0; }
-  .manual-hint { font-size: 11px; color: var(--muted); margin-bottom: 12px; line-height: 1.6; }
-  .manual-submit { width: 100%; background: var(--accent3); color: #0a0a0f; border: none; border-radius: 12px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .manual-row-wrap { margin-bottom: 10px; }
+  .manual-submit { width: 100%; background: var(--accent3); color: #0a0a0f; border: none; border-radius: 12px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 4px; }
   .manual-submit:active { opacity: 0.8; }
-  .manual-submit:disabled { opacity: 0.5; pointer-events: none; }
 
   /* Preview */
   .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 16px; display: none; }
@@ -100,11 +86,11 @@
   .loading-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
   .loading-sub { font-size: 13px; color: var(--muted); }
 
-  /* Result */
+  /* Result card */
   .result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 16px; display: none; animation: fadeUp 0.4s ease; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   .result-header { padding: 14px 20px; background: rgba(127,255,110,0.07); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-  .result-header.manual-header { background: rgba(255,184,110,0.07); }
+  .result-header.manual { background: rgba(255,184,110,0.07); }
   .result-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; flex: 1; }
   .result-time { font-size: 11px; color: var(--muted); }
   .result-macros { display: flex; border-bottom: 1px solid var(--border); }
@@ -123,66 +109,74 @@
   .result-note { padding: 12px 20px; background: rgba(42,42,58,0.4); font-size: 13px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); }
 
   /* Today list */
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; margin-top: 8px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 6px; }
   .section-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
-  .today-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-  .today-thumb { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
-  .today-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .today-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .today-thumb { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
+  .today-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
   .today-info { flex: 1; min-width: 0; }
   .today-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .today-time { font-size: 11px; color: var(--muted); }
   .today-nums { text-align: right; flex-shrink: 0; }
   .today-cal { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--accent); }
   .today-prot { font-size: 11px; color: var(--accent2); }
-  .today-del { background: transparent; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px 8px; margin-left: 4px; }
-  .today-del:active { color: var(--danger); }
+  .today-del { background: transparent; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 4px 6px; }
+  .type-badge { font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 600; margin-left: 5px; }
+  .type-ai { background: rgba(127,255,110,0.12); color: var(--accent); }
+  .type-manual { background: rgba(255,184,110,0.12); color: var(--accent3); }
 
-  /* History tab */
-  .date-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-  .date-nav { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 18px; cursor: pointer; color: var(--text); }
-  .date-nav:active { opacity: 0.7; }
-  .date-label { flex: 1; text-align: center; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+  /* History */
   .view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 3px; margin-bottom: 16px; }
   .view-btn { flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; }
   .view-btn.active { background: var(--bg); color: var(--text); }
-
-  /* History summary card */
-  .summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; }
-  .summary-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .summary-macros { display: flex; gap: 0; }
-  .summary-macro { flex: 1; text-align: center; padding: 0 8px; border-right: 1px solid var(--border); }
+  .date-nav-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .date-nav { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 18px; cursor: pointer; color: var(--text); border: none; background: var(--card); }
+  .date-nav:active { opacity: 0.7; }
+  .date-label { flex: 1; text-align: center; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+  .summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 14px; }
+  .summary-top { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .summary-macros { display: flex; }
+  .summary-macro { flex: 1; text-align: center; padding: 0 4px; border-right: 1px solid var(--border); }
   .summary-macro:last-child { border-right: none; }
-  .summary-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 2px; }
+  .summary-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 2px; }
   .summary-lbl { font-size: 11px; color: var(--muted); }
-
-  /* Monthly chart */
-  .month-chart { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; }
-  .chart-title { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
-  .chart-bars { display: flex; align-items: flex-end; gap: 3px; height: 80px; }
-  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .chart-bar { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.4s ease; min-height: 2px; }
-  .chart-bar.cal-bar { background: rgba(127,255,110,0.5); }
-  .chart-bar.prot-bar { background: rgba(110,224,255,0.5); }
-  .chart-day { font-size: 9px; color: var(--muted); }
-  .chart-legend { display: flex; gap: 14px; margin-top: 10px; }
-  .chart-legend span { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
-  .legend-dot { width: 8px; height: 8px; border-radius: 2px; }
-
-  /* History day entries */
-  .hist-day-entry { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-  .hist-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; }
-  .hist-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .hist-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .hist-thumb { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; }
+  .hist-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
   .hist-info { flex: 1; min-width: 0; }
   .hist-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .hist-time { font-size: 11px; color: var(--muted); }
   .hist-nums { text-align: right; flex-shrink: 0; }
   .hist-cal { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); }
   .hist-prot { font-size: 11px; color: var(--accent2); }
+  .month-chart { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 14px; }
+  .chart-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .chart-area { display: flex; align-items: flex-end; gap: 2px; height: 80px; }
+  .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .chart-bar { width: 100%; border-radius: 3px 3px 0 0; background: rgba(127,255,110,0.45); min-height: 2px; transition: height 0.4s ease; }
+  .chart-lbl { font-size: 8px; color: var(--muted); }
+  .clickable { cursor: pointer; }
+  .clickable:active { opacity: 0.7; }
+
+  /* Settings */
+  .settings-section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+  .settings-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .settings-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+  .settings-row { margin-bottom: 12px; }
+  .save-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 4px; }
+  .save-btn:active { opacity: 0.8; }
+  .danger-btn { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; margin-top: 8px; }
+  .api-steps { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
+  .api-steps p { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
+  .api-steps ol { padding-left: 16px; }
+  .api-steps li { font-size: 13px; color: var(--text); margin-bottom: 5px; line-height: 1.6; }
+  .api-steps a { color: var(--accent2); }
+  .api-status { font-size: 12px; margin-top: 8px; text-align: center; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn-row .save-btn { margin-top: 0; }
+  .clear-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
 
   .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 2.4; }
-  .type-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; margin-left: 6px; }
-  .type-ai { background: rgba(127,255,110,0.12); color: var(--accent); }
-  .type-manual { background: rgba(255,184,110,0.12); color: var(--accent3); }
 </style>
 </head>
 <body>
@@ -193,36 +187,39 @@
     <div class="sub">拍照即知熱量與蛋白質　by Gemini AI</div>
   </div>
 
-  <!-- Tabs -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('record')">📋 今日記錄</button>
-    <button class="tab" onclick="switchTab('history')">📅 歷史紀錄</button>
+    <button class="tab active" onclick="switchTab('record')">📋 今日</button>
+    <button class="tab" onclick="switchTab('history')">📅 歷史</button>
     <button class="tab" onclick="switchTab('settings')">⚙️ 設定</button>
   </div>
 
-  <!-- ═══════════════ TAB: RECORD ═══════════════ -->
+  <!-- ══════════ 今日記錄 ══════════ -->
   <div class="tab-content active" id="tab-record">
 
-    <!-- Daily bar -->
     <div class="daily-bar">
       <div class="stat-col">
         <div class="stat-label">今日熱量</div>
-        <div class="stat-value" id="calVal">0 <span>/ 2000 kcal</span></div>
+        <div class="stat-value" id="calVal">0 <span id="calGoalLabel">/ 2000 kcal</span></div>
         <div class="stat-bar"><div class="stat-fill fill-green" id="calBar" style="width:0%"></div></div>
       </div>
       <div class="stat-col">
         <div class="stat-label">今日蛋白質</div>
-        <div class="stat-value" id="protVal">0 <span>/ 130 g</span></div>
+        <div class="stat-value" id="protVal">0 <span id="protGoalLabel">/ 130 g</span></div>
         <div class="stat-bar"><div class="stat-fill fill-blue" id="protBar" style="width:0%"></div></div>
       </div>
     </div>
 
     <div class="error-box" id="errorBox"></div>
 
-    <!-- Upload zone -->
+    <div class="action-row">
+      <button class="btn btn-primary" style="flex:1" onclick="toggleSection('upload')">📷 拍照辨識</button>
+      <button class="btn btn-orange" style="flex:1" onclick="toggleSection('manual')">✏️ 手動輸入</button>
+    </div>
+
+    <!-- 拍照區 -->
     <div class="upload-zone" id="uploadZone">
       <div class="upload-icon">📷</div>
-      <div class="upload-title">拍照辨識食物</div>
+      <div class="upload-title">拍照或上傳食物照片</div>
       <div class="upload-sub">支援 JPG、PNG、HEIC 格式</div>
       <div class="upload-actions">
         <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">📸 拍照</button>
@@ -232,25 +229,21 @@
       <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)">
     </div>
 
-    <!-- Manual input box -->
+    <!-- 手動輸入區 -->
     <div class="manual-box" id="manualBox">
       <div class="manual-title">✏️ 手動輸入食物</div>
-      <div class="manual-hint">輸入食物名稱，AI 自動查詢熱量與蛋白質。若你知道蛋白質克數，可直接填入（更準確）。</div>
-      <input class="input-field" type="text" id="manualFood" placeholder="例如：豆漿 300ml、水煮蛋 2顆、雞胸肉 150g" />
-      <div class="manual-row">
-        <input class="input-field" type="number" id="manualCal" placeholder="熱量（選填）kcal" min="0" />
-        <input class="input-field" type="number" id="manualProt" placeholder="蛋白質（選填）g" min="0" />
+      <div class="manual-hint">輸入食物名稱，AI 自動查詢熱量與蛋白質。<br>若你已知數值，直接填入不需呼叫 AI。</div>
+      <input class="input-field" type="text" id="manualFood" placeholder="例如：豆漿 300ml、水煮蛋 2顆" />
+      <div class="manual-row-wrap">
+        <div class="manual-row">
+          <input class="input-field" type="number" id="manualCal" placeholder="熱量 kcal（選填）" min="0">
+          <input class="input-field" type="number" id="manualProt" placeholder="蛋白質 g（選填）" min="0">
+        </div>
       </div>
-      <button class="manual-submit" id="manualSubmitBtn" onclick="submitManual()">查詢並新增 ✦</button>
+      <button class="manual-submit" onclick="submitManual()">新增 ✦</button>
     </div>
 
-    <!-- Action buttons -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;" id="actionBtns">
-      <button class="btn btn-primary" style="flex:1" onclick="toggleUpload()">📷 拍照辨識</button>
-      <button class="btn btn-orange" style="flex:1" onclick="toggleManual()">✏️ 手動輸入</button>
-    </div>
-
-    <!-- Preview -->
+    <!-- 圖片預覽 -->
     <div class="preview-box" id="previewBox">
       <img id="previewImg" class="preview-img" src="" alt="預覽">
       <div class="preview-footer">
@@ -259,17 +252,17 @@
       </div>
     </div>
 
-    <!-- Loading -->
+    <!-- 載入中 -->
     <div class="loading-box" id="loadingBox">
       <div class="spinner"></div>
       <div class="loading-text" id="loadingText">Gemini 正在辨識食物…</div>
       <div class="loading-sub">分析熱量與蛋白質中，請稍候</div>
     </div>
 
-    <!-- Result -->
+    <!-- 分析結果 -->
     <div class="result-card" id="resultCard"></div>
 
-    <!-- Today list -->
+    <!-- 今日明細 -->
     <div id="todaySection">
       <div class="section-header">
         <div class="section-title">今日明細</div>
@@ -277,156 +270,174 @@
       </div>
       <div id="todayList"></div>
     </div>
-
-    <div class="empty-state" id="emptyState">
-      📸 拍照或手動輸入第一筆食物<br>開始記錄今天的營養攝取
-    </div>
+    <div class="empty-state" id="emptyState">📸 拍照或手動輸入<br>開始記錄今天的營養攝取</div>
 
   </div>
 
-  <!-- ═══════════════ TAB: HISTORY ═══════════════ -->
+  <!-- ══════════ 歷史紀錄 ══════════ -->
   <div class="tab-content" id="tab-history">
     <div class="view-toggle">
-      <button class="view-btn active" id="viewDayBtn" onclick="setHistView('day')">📅 日檢視</button>
-      <button class="view-btn" id="viewMonthBtn" onclick="setHistView('month')">📆 月檢視</button>
+      <button class="view-btn active" id="btnDay" onclick="setView('day')">📅 日檢視</button>
+      <button class="view-btn" id="btnMonth" onclick="setView('month')">📆 月檢視</button>
     </div>
 
-    <div id="histDayView">
-      <div class="date-selector">
-        <button class="date-nav" onclick="changeDay(-1)">‹</button>
+    <!-- 日檢視 -->
+    <div id="viewDay">
+      <div class="date-nav-row">
+        <button class="date-nav" onclick="shiftDay(-1)">‹</button>
         <div class="date-label" id="dayLabel"></div>
-        <button class="date-nav" onclick="changeDay(1)">›</button>
+        <button class="date-nav" onclick="shiftDay(1)">›</button>
       </div>
-      <div id="daySummary"></div>
-      <div id="dayEntries"></div>
+      <div id="daySummaryEl"></div>
+      <div id="dayEntriesEl"></div>
     </div>
 
-    <div id="histMonthView" style="display:none">
-      <div class="date-selector">
-        <button class="date-nav" onclick="changeMonth(-1)">‹</button>
+    <!-- 月檢視 -->
+    <div id="viewMonth" style="display:none">
+      <div class="date-nav-row">
+        <button class="date-nav" onclick="shiftMonth(-1)">‹</button>
         <div class="date-label" id="monthLabel"></div>
-        <button class="date-nav" onclick="changeMonth(1)">›</button>
+        <button class="date-nav" onclick="shiftMonth(1)">›</button>
       </div>
-      <div id="monthChart"></div>
-      <div id="monthSummary"></div>
-      <div id="monthDayList"></div>
+      <div id="monthChartEl"></div>
+      <div id="monthSummaryEl"></div>
+      <div id="monthDaysEl"></div>
     </div>
   </div>
 
-  <!-- ═══════════════ TAB: SETTINGS ═══════════════ -->
+  <!-- ══════════ 設定 ══════════ -->
   <div class="tab-content" id="tab-settings">
-    <div class="api-prompt" id="settingsApiBox">
-      <div class="api-prompt-title">🔑 Google Gemini API Key</div>
-      <div class="api-prompt-sub">免費申請，每天可分析大量照片，不需綁信用卡。</div>
+
+    <div class="settings-section">
+      <div class="settings-title">🔑 Gemini API Key</div>
       <div class="api-steps">
-        <p>申請步驟</p>
+        <p>免費申請步驟</p>
         <ol>
           <li>前往 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio →</a></li>
           <li>用 Google 帳號登入</li>
           <li>點「Create API key」</li>
-          <li>複製 Key（以 AIzaSy 開頭）</li>
+          <li>複製 Key（以 AIzaSy 開頭）貼到下方</li>
         </ol>
       </div>
-      <input class="input-field" type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off" />
-      <div class="api-row">
-        <button class="api-save-btn" onclick="saveApiKey()">儲存 Key →</button>
-        <button class="api-clear-btn" onclick="clearApiKey()">清除</button>
+      <input class="input-field" type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
+      <div class="btn-row">
+        <button class="save-btn" onclick="saveApiKey()">儲存 Key</button>
+        <button class="clear-btn" onclick="clearApiKey()">清除</button>
       </div>
-      <div class="api-note" id="apiStatus"></div>
+      <div class="api-status" id="apiStatus"></div>
     </div>
 
-    <div class="api-prompt" style="margin-top:16px">
-      <div class="api-prompt-title">🎯 每日目標設定</div>
-      <div style="margin-top:12px">
-        <div class="stat-label" style="margin-bottom:6px">每日熱量目標（kcal）</div>
-        <input class="input-field" type="number" id="goalCal" placeholder="2000" />
+    <div class="settings-section">
+      <div class="settings-title">🎯 每日目標</div>
+      <div class="settings-row">
+        <div class="settings-label">熱量目標（kcal）</div>
+        <input class="input-field" type="number" id="goalCal" placeholder="2000">
       </div>
-      <div style="margin-top:10px">
-        <div class="stat-label" style="margin-bottom:6px">每日蛋白質目標（g）</div>
-        <input class="input-field" type="number" id="goalProt" placeholder="130" />
+      <div class="settings-row">
+        <div class="settings-label">蛋白質目標（g）</div>
+        <input class="input-field" type="number" id="goalProt" placeholder="130">
       </div>
-      <button class="api-save-btn" style="margin-top:10px" onclick="saveGoals()">儲存目標</button>
+      <button class="save-btn" onclick="saveGoals()">儲存目標</button>
     </div>
 
-    <div class="api-prompt" style="margin-top:16px">
-      <div class="api-prompt-title">🗑️ 資料管理</div>
-      <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
-        <button class="btn btn-outline" style="width:100%;padding:12px" onclick="exportData()">📤 匯出所有資料（JSON）</button>
-        <button class="btn btn-outline" style="width:100%;padding:12px;color:var(--danger);border-color:var(--danger)" onclick="clearAllData()">⚠️ 清除所有資料</button>
-      </div>
+    <div class="settings-section">
+      <div class="settings-title">🗃️ 資料管理</div>
+      <button class="save-btn" onclick="exportData()">📤 匯出資料（JSON）</button>
+      <button class="danger-btn" onclick="clearAllData()">⚠️ 清除所有紀錄</button>
     </div>
+
   </div>
-
 </div>
+
 <script>
-// ── State ─────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 狀態與工具
+// ═══════════════════════════════════════════════
+let settings = { goalCal: 2000, goalProt: 130 };
 let currentImageB64 = null;
 let currentMediaType = 'image/jpeg';
-let settings = { goalCal: 2000, goalProt: 130 };
-let showUpload = false;
-let showManual = false;
 let histView = 'day';
-let currentDay = dateKey(new Date());
-let currentMonth = monthKey(new Date());
+let curDay = todayKey();
+let curMonth = monthKey(new Date());
+let activeSection = null; // 'upload' | 'manual' | null
 
-// ── Storage helpers ────────────────────────────────────
-function dateKey(d) {
-  return d.toISOString().split('T')[0]; // YYYY-MM-DD
+function todayKey() {
+  return new Date().toISOString().split('T')[0];
 }
 function monthKey(d) {
-  return d.toISOString().slice(0, 7); // YYYY-MM
+  return d.toISOString().slice(0, 7);
 }
+function fmtTime() {
+  return new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ═══════════════════════════════════════════════
+// 設定 / API Key
+// ═══════════════════════════════════════════════
 function loadSettings() {
   const s = localStorage.getItem('nl_settings');
-  if (s) settings = { ...settings, ...JSON.parse(s) };
+  if (s) try { settings = { ...settings, ...JSON.parse(s) }; } catch(e) {}
 }
-function saveSettings() {
+function persistSettings() {
   localStorage.setItem('nl_settings', JSON.stringify(settings));
 }
 function getApiKey() { return localStorage.getItem('nl_gemini_key') || ''; }
+
 function saveApiKey() {
   const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key || key.length < 10) { alert('請輸入正確的 API Key'); return; }
+  if (!key || key.length < 10) { setApiStatus('請輸入正確的 API Key', false); return; }
   localStorage.setItem('nl_gemini_key', key);
-  document.getElementById('apiStatus').textContent = '✅ Key 已儲存';
-  document.getElementById('apiStatus').style.color = 'var(--accent)';
-  checkApiSetup();
+  setApiStatus('✅ API Key 已儲存', true);
 }
 function clearApiKey() {
   localStorage.removeItem('nl_gemini_key');
   document.getElementById('apiKeyInput').value = '';
-  document.getElementById('apiStatus').textContent = '⚠️ 請輸入 API Key 才能使用 AI 辨識功能';
-  document.getElementById('apiStatus').style.color = 'var(--muted)';
-  checkApiSetup();
+  setApiStatus('已清除', false);
+}
+function setApiStatus(msg, ok) {
+  const el = document.getElementById('apiStatus');
+  el.textContent = msg;
+  el.style.color = ok ? 'var(--accent)' : 'var(--muted)';
 }
 
-// ── Record storage ─────────────────────────────────────
-function getAllRecords() {
-  return JSON.parse(localStorage.getItem('nl_records') || '{}');
+function saveGoals() {
+  const c = parseInt(document.getElementById('goalCal').value) || 2000;
+  const p = parseInt(document.getElementById('goalProt').value) || 130;
+  settings.goalCal = c; settings.goalProt = p;
+  persistSettings();
+  updateProgress();
+  document.getElementById('calGoalLabel').textContent = `/ ${c} kcal`;
+  document.getElementById('protGoalLabel').textContent = `/ ${p} g`;
+  alert('✅ 目標已儲存');
 }
-function saveAllRecords(records) {
-  localStorage.setItem('nl_records', JSON.stringify(records));
+
+// ═══════════════════════════════════════════════
+// 紀錄 CRUD
+// ═══════════════════════════════════════════════
+function allRecords() {
+  try { return JSON.parse(localStorage.getItem('nl_records') || '{}'); } catch(e) { return {}; }
 }
-function getTodayRecords() {
-  const all = getAllRecords();
-  return all[dateKey(new Date())] || [];
-}
+function saveRecords(r) { localStorage.setItem('nl_records', JSON.stringify(r)); }
+function todayRecords() { return allRecords()[todayKey()] || []; }
+
 function addRecord(entry) {
-  const all = getAllRecords();
-  const key = dateKey(new Date());
-  if (!all[key]) all[key] = [];
-  all[key].unshift(entry);
-  saveAllRecords(all);
+  const all = allRecords();
+  const k = todayKey();
+  if (!all[k]) all[k] = [];
+  all[k].unshift(entry);
+  saveRecords(all);
 }
-function deleteRecord(dateStr, id) {
-  const all = getAllRecords();
+function removeRecord(dateStr, id) {
+  const all = allRecords();
   if (!all[dateStr]) return;
   all[dateStr] = all[dateStr].filter(e => e.id !== id);
-  if (all[dateStr].length === 0) delete all[dateStr];
-  saveAllRecords(all);
+  if (!all[dateStr].length) delete all[dateStr];
+  saveRecords(all);
 }
 
-// ── Tab switching ──────────────────────────────────────
+// ═══════════════════════════════════════════════
+// Tab & Section 切換
+// ═══════════════════════════════════════════════
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t, i) => {
     t.classList.toggle('active', ['record','history','settings'][i] === name);
@@ -434,52 +445,37 @@ function switchTab(name) {
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   if (name === 'history') renderHistory();
-  if (name === 'settings') {
-    const key = getApiKey();
-    document.getElementById('apiKeyInput').value = key ? '••••••••••••••••' : '';
-    document.getElementById('apiStatus').textContent = key ? '✅ API Key 已設定' : '⚠️ 尚未設定 API Key';
-    document.getElementById('apiStatus').style.color = key ? 'var(--accent)' : 'var(--muted)';
-    document.getElementById('goalCal').value = settings.goalCal;
-    document.getElementById('goalProt').value = settings.goalProt;
+  if (name === 'settings') initSettings();
+}
+
+function initSettings() {
+  const key = getApiKey();
+  document.getElementById('apiKeyInput').value = key ? '••••••••••••••••' : '';
+  setApiStatus(key ? '✅ API Key 已設定' : '尚未設定 API Key', !!key);
+  document.getElementById('goalCal').value = settings.goalCal;
+  document.getElementById('goalProt').value = settings.goalProt;
+}
+
+function toggleSection(name) {
+  if (activeSection === name) {
+    activeSection = null;
+  } else {
+    activeSection = name;
   }
+  document.getElementById('uploadZone').style.display = activeSection === 'upload' ? 'block' : 'none';
+  document.getElementById('manualBox').style.display  = activeSection === 'manual' ? 'block' : 'none';
 }
 
-function saveGoals() {
-  const c = parseInt(document.getElementById('goalCal').value) || 2000;
-  const p = parseInt(document.getElementById('goalProt').value) || 130;
-  settings.goalCal = c; settings.goalProt = p;
-  saveSettings();
-  updateProgress();
-  alert('✅ 目標已儲存！');
-}
-
-// ── UI toggles ─────────────────────────────────────────
-function toggleUpload() {
-  showUpload = !showUpload;
-  showManual = false;
-  document.getElementById('uploadZone').style.display = showUpload ? 'block' : 'none';
-  document.getElementById('manualBox').style.display = 'none';
-}
-function toggleManual() {
-  showManual = !showManual;
-  showUpload = false;
-  document.getElementById('manualBox').style.display = showManual ? 'block' : 'none';
-  document.getElementById('uploadZone').style.display = 'none';
-}
-function checkApiSetup() {
-  const hasKey = !!getApiKey();
-  // Show warning if no key but upload is visible
-}
-
-// ── File handling ──────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 圖片處理
+// ═══════════════════════════════════════════════
 function handleFile(input) {
   const file = input.files[0];
   if (!file) return;
-  currentMediaType = file.type || 'image/jpeg';
   const img = new Image();
   const reader = new FileReader();
-  reader.onload = function (e) {
-    img.onload = function () {
+  reader.onload = function(e) {
+    img.onload = function() {
       const canvas = document.createElement('canvas');
       const MAX = 1024;
       let w = img.width, h = img.height;
@@ -489,13 +485,12 @@ function handleFile(input) {
       }
       canvas.width = w; canvas.height = h;
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      const compressed = canvas.toDataURL('image/jpeg', 0.85);
-      currentImageB64 = compressed.split(',')[1];
+      const out = canvas.toDataURL('image/jpeg', 0.85);
+      currentImageB64 = out.split(',')[1];
       currentMediaType = 'image/jpeg';
-      document.getElementById('previewImg').src = compressed;
+      document.getElementById('previewImg').src = out;
       document.getElementById('uploadZone').style.display = 'none';
       document.getElementById('previewBox').style.display = 'block';
-      document.getElementById('actionBtns').style.display = 'none';
       hideError();
     };
     img.src = e.target.result;
@@ -507,196 +502,184 @@ function handleFile(input) {
 function clearImage() {
   currentImageB64 = null;
   document.getElementById('previewBox').style.display = 'none';
-  document.getElementById('actionBtns').style.display = 'flex';
-  document.getElementById('uploadZone').style.display = showUpload ? 'block' : 'none';
-  hideError();
+  document.getElementById('uploadZone').style.display = activeSection === 'upload' ? 'block' : 'none';
 }
 
-// ── AI Analyze ─────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// Gemini API 呼叫（與可用版本完全相同的 prompt）
+// ═══════════════════════════════════════════════
+const MODELS = ['gemini-3-flash', 'gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'];
+
+async function callGemini(parts) {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error('請先在「設定」頁面輸入 Gemini API Key');
+  let lastErr = '';
+  for (const model of MODELS) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    try {
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+        })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (!data.candidates?.length) throw new Error('未收到 AI 回應');
+        return data.candidates[0]?.content?.parts?.[0]?.text || '';
+      }
+      const ed = await resp.json().catch(() => ({}));
+      lastErr = ed.error?.message || `HTTP ${resp.status}`;
+    } catch(e) {
+      lastErr = e.message;
+    }
+  }
+  throw new Error(lastErr || '無法連接 Gemini API');
+}
+
+// 與可用版本一模一樣的 prompt + 解析
+const FOOD_PROMPT = `你是專業營養師，分析這張食物照片，估算熱量與蛋白質。
+請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
+{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
+
+const MANUAL_PROMPT = (food, prot) =>
+  `你是專業營養師，估算以下食物的熱量與蛋白質：「${food}」${prot ? `（蛋白質已知為 ${prot}g）` : ''}
+請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
+{"mealName":"食物名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
+
+function parseJSON(raw) {
+  if (!raw) return null;
+  // 去除 markdown 包裹
+  let s = raw.replace(/```json/gi,'').replace(/```/g,'').trim();
+  // 直接解析
+  try { return JSON.parse(s); } catch(e) {}
+  // 擷取 {...} 範圍
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a !== -1 && b !== -1) {
+    try { return JSON.parse(s.slice(a, b+1)); } catch(e) {}
+  }
+  return null;
+}
+
+// ═══════════════════════════════════════════════
+// 拍照分析
+// ═══════════════════════════════════════════════
 async function analyzeImage() {
   if (!currentImageB64) return;
-  const apiKey = getApiKey();
-  if (!apiKey) { showError('請先在「設定」頁面輸入 Gemini API Key'); return; }
-
   const savedImg = document.getElementById('previewImg').src;
   document.getElementById('previewBox').style.display = 'none';
   document.getElementById('resultCard').style.display = 'none';
   document.getElementById('loadingBox').style.display = 'block';
   document.getElementById('loadingText').textContent = 'Gemini 正在辨識食物…';
   hideError();
-
   try {
-    const models = ['gemini-2.5-flash', 'gemini-3-flash', 'gemini-2.0-flash'];
-    let resp = null, lastErr = '';
-    for (const model of models) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      try {
-        resp = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [
-              { inline_data: { mime_type: currentMediaType, data: currentImageB64 } },
-              { text: `你是專業營養師。分析這張食物照片，估算熱量和蛋白質。只回傳 JSON，不要加任何其他文字或 markdown：
-{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}` }
-            ]}],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
-          })
-        });
-        if (resp.ok) break;
-        const ed = await resp.json().catch(() => ({}));
-        lastErr = ed.error?.message || `HTTP ${resp.status}`;
-        resp = null;
-      } catch (e) { lastErr = e.message; resp = null; }
-    }
-
-    if (!resp) throw new Error(lastErr || '無法連接 Gemini API');
-    const data = await resp.json();
-    if (!data.candidates?.length) throw new Error('未收到 AI 回應');
-    const raw = data.candidates[0]?.content?.parts?.[0]?.text || '';
-    const parsed = parseGeminiJSON(raw);
+    const raw = await callGemini([
+      { inline_data: { mime_type: currentMediaType, data: currentImageB64 } },
+      { text: FOOD_PROMPT }
+    ]);
+    const parsed = parseJSON(raw);
     if (!parsed) throw new Error('無法解析 AI 回應');
-
-    const entry = {
-      id: Date.now(), type: 'ai', image: savedImg,
-      mealName: parsed.mealName || '未知餐點',
-      calories: Number(parsed.totalCalories) || 0,
-      protein: Number(parsed.totalProtein) || 0,
-      foods: Array.isArray(parsed.foods) ? parsed.foods : [],
-      note: parsed.note || '',
-      time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
-    };
-    addRecord(entry);
-    renderResult(entry, false);
-    renderTodayList();
-    updateProgress();
+    const entry = makeEntry('ai', savedImg, parsed);
+    finishEntry(entry);
     currentImageB64 = null;
-    document.getElementById('actionBtns').style.display = 'flex';
-
-  } catch (err) {
-    let msg = '分析失敗：' + (err.message || '請重試');
-    if (err.message?.includes('API_KEY_INVALID')) msg = 'API Key 無效，請至設定頁面重新輸入';
-    if (err.message?.includes('quota') || err.message?.includes('RESOURCE_EXHAUSTED')) msg = '今日免費額度已用完，明天再試';
-    showError(msg);
-    document.getElementById('actionBtns').style.display = 'flex';
+  } catch(err) {
+    showError(friendlyErr(err.message));
   } finally {
     document.getElementById('loadingBox').style.display = 'none';
   }
 }
 
-// ── Manual input ───────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 手動輸入
+// ═══════════════════════════════════════════════
 async function submitManual() {
-  const foodText = document.getElementById('manualFood').value.trim();
-  if (!foodText) { showError('請輸入食物名稱'); return; }
+  const food = document.getElementById('manualFood').value.trim();
+  if (!food) { showError('請輸入食物名稱'); return; }
+  const cal  = parseFloat(document.getElementById('manualCal').value);
+  const prot = parseFloat(document.getElementById('manualProt').value);
 
-  const manualCal = parseFloat(document.getElementById('manualCal').value);
-  const manualProt = parseFloat(document.getElementById('manualProt').value);
-  const hasManualValues = !isNaN(manualCal) && !isNaN(manualProt);
-
-  // If both cal and protein are manually entered, skip AI
-  if (hasManualValues) {
+  // 兩個都填了 → 直接新增，不需 AI
+  if (!isNaN(cal) && !isNaN(prot)) {
     const entry = {
       id: Date.now(), type: 'manual', image: null,
-      mealName: foodText,
-      calories: manualCal,
-      protein: manualProt,
-      foods: [{ name: foodText, calories: manualCal, protein: manualProt }],
-      note: '',
-      time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
+      mealName: food, calories: cal, protein: prot,
+      foods: [{ name: food, calories: cal, protein: prot }],
+      note: '', time: fmtTime()
     };
-    addRecord(entry);
-    renderResult(entry, true);
-    renderTodayList();
-    updateProgress();
+    finishEntry(entry);
     clearManualForm();
     return;
   }
 
-  // Use AI to look up nutrition
-  const apiKey = getApiKey();
-  if (!apiKey) { showError('請先在「設定」頁面輸入 Gemini API Key'); return; }
-
+  // 否則呼叫 AI 查詢
   document.getElementById('manualBox').style.display = 'none';
   document.getElementById('loadingBox').style.display = 'block';
-  document.getElementById('loadingText').textContent = 'AI 正在查詢營養數據…';
-  document.getElementById('manualSubmitBtn').disabled = true;
+  document.getElementById('loadingText').textContent = 'AI 查詢營養數據中…';
   hideError();
-
   try {
-    const models = ['gemini-2.5-flash', 'gemini-3-flash', 'gemini-2.0-flash'];
-    let resp = null, lastErr = '';
-    for (const model of models) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      try {
-        resp = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: `你是專業營養師。估算以下食物的熱量與蛋白質：「${foodText}」${!isNaN(manualProt) ? `（蛋白質已知為 ${manualProt}g）` : ''}
-只回傳 JSON，不要加任何其他文字或 markdown：
-{"mealName":"食物名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}` }] }],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 500 }
-          })
-        });
-        if (resp.ok) break;
-        const ed = await resp.json().catch(() => ({}));
-        lastErr = ed.error?.message || `HTTP ${resp.status}`;
-        resp = null;
-      } catch (e) { lastErr = e.message; resp = null; }
-    }
-    if (!resp) throw new Error(lastErr || '無法連接 API');
-    const data = await resp.json();
-    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const parsed = parseGeminiJSON(raw);
-    if (!parsed) throw new Error('無法解析回應');
-
-    const entry = {
-      id: Date.now(), type: 'manual', image: null,
-      mealName: parsed.mealName || foodText,
-      calories: !isNaN(manualCal) ? manualCal : Number(parsed.totalCalories) || 0,
-      protein: !isNaN(manualProt) ? manualProt : Number(parsed.totalProtein) || 0,
-      foods: parsed.foods || [],
-      note: parsed.note || '',
-      time: new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' })
-    };
-    addRecord(entry);
-    renderResult(entry, true);
-    renderTodayList();
-    updateProgress();
+    const raw = await callGemini([{ text: MANUAL_PROMPT(food, isNaN(prot) ? null : prot) }]);
+    const parsed = parseJSON(raw);
+    if (!parsed) throw new Error('無法解析 AI 回應');
+    const entry = makeEntry('manual', null, parsed);
+    // 若使用者有填其中一個，覆蓋 AI 數值
+    if (!isNaN(cal))  entry.calories = cal;
+    if (!isNaN(prot)) entry.protein  = prot;
+    finishEntry(entry);
     clearManualForm();
-
-  } catch (err) {
-    showError('查詢失敗：' + err.message);
+  } catch(err) {
+    showError(friendlyErr(err.message));
     document.getElementById('manualBox').style.display = 'block';
   } finally {
     document.getElementById('loadingBox').style.display = 'none';
-    document.getElementById('manualSubmitBtn').disabled = false;
   }
 }
 
 function clearManualForm() {
   document.getElementById('manualFood').value = '';
-  document.getElementById('manualCal').value = '';
+  document.getElementById('manualCal').value  = '';
   document.getElementById('manualProt').value = '';
+  activeSection = null;
   document.getElementById('manualBox').style.display = 'none';
-  showManual = false;
 }
 
-// ── Render result ──────────────────────────────────────
-function renderResult(entry, isManual) {
+// ═══════════════════════════════════════════════
+// 共用：建立 entry、完成流程
+// ═══════════════════════════════════════════════
+function makeEntry(type, image, parsed) {
+  return {
+    id: Date.now(), type, image,
+    mealName: parsed.mealName || '未知餐點',
+    calories: Number(parsed.totalCalories) || 0,
+    protein:  Number(parsed.totalProtein)  || 0,
+    foods: Array.isArray(parsed.foods) ? parsed.foods : [],
+    note: parsed.note || '',
+    time: fmtTime()
+  };
+}
+
+function finishEntry(entry) {
+  addRecord(entry);
+  renderResult(entry);
+  renderTodayList();
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════
+// 渲染
+// ═══════════════════════════════════════════════
+function renderResult(entry) {
   const foods = entry.foods.map(f =>
     `<div class="food-item"><span>${f.name}</span>
      <div class="food-badges">
        <span class="badge badge-cal">${f.calories} kcal</span>
        <span class="badge badge-prot">${f.protein}g</span>
      </div></div>`).join('');
-
-  const headerClass = isManual ? 'result-header manual-header' : 'result-header';
-  const icon = isManual ? '✏️' : '✦';
-
+  const isManual = entry.type === 'manual';
   document.getElementById('resultCard').innerHTML = `
-    <div class="${headerClass}">
-      <span>${icon}</span>
+    <div class="result-header${isManual ? ' manual' : ''}">
+      <span>${isManual ? '✏️' : '✦'}</span>
       <span class="result-title">${entry.mealName}</span>
       <span class="result-time">${entry.time}</span>
     </div>
@@ -705,31 +688,24 @@ function renderResult(entry, isManual) {
       <div class="macro-item"><div class="macro-val" style="color:var(--accent2)">${entry.protein}g</div><div class="macro-label">蛋白質</div></div>
       <div class="macro-item"><div class="macro-val" style="color:#c8c8e8;font-size:20px">${entry.foods.length}</div><div class="macro-label">食材</div></div>
     </div>
-    <div class="food-list"><div class="food-list-title">食材明細</div>${foods}</div>
+    <div class="food-list"><div class="food-list-title">食材明細</div>${foods || '<div style="color:var(--muted);font-size:13px">無明細</div>'}</div>
     ${entry.note ? `<div class="result-note">💡 ${entry.note}</div>` : ''}
   `;
   document.getElementById('resultCard').style.display = 'block';
 }
 
-// ── Today list ─────────────────────────────────────────
 function renderTodayList() {
-  const records = getTodayRecords();
-  const list = document.getElementById('todayList');
+  const records = todayRecords();
   const empty = document.getElementById('emptyState');
-
-  if (!records.length) {
-    list.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
+  const list  = document.getElementById('todayList');
+  if (!records.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   list.innerHTML = records.map(h => {
     const thumb = h.image
-      ? `<div class="today-thumb"><img src="${h.image}" alt="${h.mealName}"></div>`
+      ? `<div class="today-thumb"><img src="${h.image}"></div>`
       : `<div class="today-thumb">${h.type === 'manual' ? '✏️' : '🍽️'}</div>`;
-    const badge = h.type === 'manual' ? '<span class="type-badge type-manual">手動</span>' : '<span class="type-badge type-ai">AI</span>';
-    return `<div class="today-item">
-      ${thumb}
+    const badge = `<span class="type-badge ${h.type === 'manual' ? 'type-manual' : 'type-ai'}">${h.type === 'manual' ? '手動' : 'AI'}</span>`;
+    return `<div class="today-item">${thumb}
       <div class="today-info">
         <div class="today-name">${h.mealName}${badge}</div>
         <div class="today-time">${h.time}</div>
@@ -743,227 +719,199 @@ function renderTodayList() {
   }).join('');
 }
 
-function deleteToday(id) {
-  deleteRecord(dateKey(new Date()), id);
-  renderTodayList();
-  updateProgress();
-  const rc = document.getElementById('resultCard');
-  if (rc.style.display !== 'none') rc.style.display = 'none';
+function updateProgress() {
+  const recs = todayRecords();
+  const cal  = recs.reduce((a,r) => a + r.calories, 0);
+  const prot = recs.reduce((a,r) => a + r.protein,  0);
+  document.getElementById('calVal').innerHTML  = `${cal} <span id="calGoalLabel">/ ${settings.goalCal} kcal</span>`;
+  document.getElementById('protVal').innerHTML = `${prot} <span id="protGoalLabel">/ ${settings.goalProt} g</span>`;
+  document.getElementById('calBar').style.width  = Math.min(cal  / settings.goalCal  * 100, 100) + '%';
+  document.getElementById('protBar').style.width = Math.min(prot / settings.goalProt * 100, 100) + '%';
 }
 
+function deleteToday(id) {
+  removeRecord(todayKey(), id);
+  renderTodayList(); updateProgress();
+}
 function clearToday() {
   if (!confirm('確定清除今日所有紀錄？')) return;
-  const all = getAllRecords();
-  delete all[dateKey(new Date())];
-  saveAllRecords(all);
-  renderTodayList();
-  updateProgress();
+  const all = allRecords(); delete all[todayKey()]; saveRecords(all);
+  renderTodayList(); updateProgress();
   document.getElementById('resultCard').style.display = 'none';
 }
 
-// ── Progress ───────────────────────────────────────────
-function updateProgress() {
-  const records = getTodayRecords();
-  const totalCal = records.reduce((a, r) => a + r.calories, 0);
-  const totalProt = records.reduce((a, r) => a + r.protein, 0);
-  document.getElementById('calVal').innerHTML = `${totalCal} <span>/ ${settings.goalCal} kcal</span>`;
-  document.getElementById('protVal').innerHTML = `${totalProt} <span>/ ${settings.goalProt} g</span>`;
-  document.getElementById('calBar').style.width = Math.min(totalCal / settings.goalCal * 100, 100) + '%';
-  document.getElementById('protBar').style.width = Math.min(totalProt / settings.goalProt * 100, 100) + '%';
-}
-
-// ── History ────────────────────────────────────────────
-function setHistView(v) {
+// ═══════════════════════════════════════════════
+// 歷史紀錄
+// ═══════════════════════════════════════════════
+function setView(v) {
   histView = v;
-  document.getElementById('viewDayBtn').classList.toggle('active', v === 'day');
-  document.getElementById('viewMonthBtn').classList.toggle('active', v === 'month');
-  document.getElementById('histDayView').style.display = v === 'day' ? 'block' : 'none';
-  document.getElementById('histMonthView').style.display = v === 'month' ? 'block' : 'none';
+  document.getElementById('btnDay').classList.toggle('active', v === 'day');
+  document.getElementById('btnMonth').classList.toggle('active', v === 'month');
+  document.getElementById('viewDay').style.display   = v === 'day'   ? 'block' : 'none';
+  document.getElementById('viewMonth').style.display = v === 'month' ? 'block' : 'none';
   renderHistory();
 }
 
-function changeDay(delta) {
-  const d = new Date(currentDay + 'T12:00:00');
-  d.setDate(d.getDate() + delta);
-  const today = dateKey(new Date());
-  if (dateKey(d) > today) return;
-  currentDay = dateKey(d);
+function shiftDay(d) {
+  const dt = new Date(curDay + 'T12:00:00');
+  dt.setDate(dt.getDate() + d);
+  if (dt > new Date()) return;
+  curDay = dt.toISOString().split('T')[0];
   renderHistory();
 }
-
-function changeMonth(delta) {
-  const [y, m] = currentMonth.split('-').map(Number);
-  const d = new Date(y, m - 1 + delta, 1);
-  const now = new Date();
-  if (d > now) return;
-  currentMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+function shiftMonth(d) {
+  const [y,m] = curMonth.split('-').map(Number);
+  const dt = new Date(y, m - 1 + d, 1);
+  if (dt > new Date()) return;
+  curMonth = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
   renderHistory();
 }
 
 function renderHistory() {
-  if (histView === 'day') renderDayHistory();
-  else renderMonthHistory();
+  if (histView === 'day') renderDayView();
+  else renderMonthView();
 }
 
-function renderDayHistory() {
-  const all = getAllRecords();
-  const records = all[currentDay] || [];
-  const d = new Date(currentDay + 'T12:00:00');
-  const isToday = currentDay === dateKey(new Date());
-  document.getElementById('dayLabel').textContent = isToday ? '今天' :
-    `${d.getMonth() + 1}/${d.getDate()} (${['日','一','二','三','四','五','六'][d.getDay()]})`;
+function renderDayView() {
+  const all = allRecords();
+  const recs = all[curDay] || [];
+  const dt = new Date(curDay + 'T12:00:00');
+  const isToday = curDay === todayKey();
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('dayLabel').textContent = isToday
+    ? '今天'
+    : `${dt.getMonth()+1}/${dt.getDate()} (${days[dt.getDay()]})`;
 
-  const totalCal = records.reduce((a, r) => a + r.calories, 0);
-  const totalProt = records.reduce((a, r) => a + r.protein, 0);
+  const cal  = recs.reduce((a,r) => a+r.calories, 0);
+  const prot = recs.reduce((a,r) => a+r.protein,  0);
 
-  document.getElementById('daySummary').innerHTML = records.length ? `
+  document.getElementById('daySummaryEl').innerHTML = recs.length ? `
     <div class="summary-card">
-      <div class="summary-title">當日合計</div>
+      <div class="summary-top">當日合計</div>
       <div class="summary-macros">
-        <div class="summary-macro"><div class="summary-val" style="color:var(--accent)">${totalCal}</div><div class="summary-lbl">大卡</div></div>
-        <div class="summary-macro"><div class="summary-val" style="color:var(--accent2)">${totalProt}g</div><div class="summary-lbl">蛋白質</div></div>
-        <div class="summary-macro"><div class="summary-val" style="color:#c8c8e8">${records.length}</div><div class="summary-lbl">筆紀錄</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:var(--accent)">${cal}</div><div class="summary-lbl">大卡</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:var(--accent2)">${prot}g</div><div class="summary-lbl">蛋白質</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:#c8c8e8">${recs.length}</div><div class="summary-lbl">筆</div></div>
       </div>
     </div>` : '';
 
-  document.getElementById('dayEntries').innerHTML = records.length ? records.map(h => {
-    const thumb = h.image
-      ? `<div class="hist-thumb"><img src="${h.image}" alt="${h.mealName}"></div>`
-      : `<div class="hist-thumb">${h.type === 'manual' ? '✏️' : '🍽️'}</div>`;
-    const badge = h.type === 'manual' ? '<span class="type-badge type-manual">手動</span>' : '<span class="type-badge type-ai">AI</span>';
-    return `<div class="hist-day-entry">${thumb}
-      <div class="hist-info"><div class="hist-name">${h.mealName}${badge}</div><div class="hist-time">${h.time}</div></div>
-      <div class="hist-nums"><div class="hist-cal">${h.calories} kcal</div><div class="hist-prot">蛋白 ${h.protein}g</div></div>
-    </div>`;
-  }).join('') : `<div class="empty-state">這一天沒有紀錄</div>`;
+  document.getElementById('dayEntriesEl').innerHTML = recs.length
+    ? recs.map(h => {
+        const thumb = h.image
+          ? `<div class="hist-thumb"><img src="${h.image}"></div>`
+          : `<div class="hist-thumb">${h.type==='manual'?'✏️':'🍽️'}</div>`;
+        const badge = `<span class="type-badge ${h.type==='manual'?'type-manual':'type-ai'}">${h.type==='manual'?'手動':'AI'}</span>`;
+        return `<div class="hist-item">${thumb}
+          <div class="hist-info"><div class="hist-name">${h.mealName}${badge}</div><div class="hist-time">${h.time}</div></div>
+          <div class="hist-nums"><div class="hist-cal">${h.calories} kcal</div><div class="hist-prot">蛋白 ${h.protein}g</div></div>
+        </div>`;
+      }).join('')
+    : `<div class="empty-state">這一天沒有紀錄</div>`;
 }
 
-function renderMonthHistory() {
-  const all = getAllRecords();
-  const [y, m] = currentMonth.split('-').map(Number);
-  const now = new Date();
+function renderMonthView() {
+  const all = allRecords();
+  const [y,m] = curMonth.split('-').map(Number);
   document.getElementById('monthLabel').textContent = `${y}年${m}月`;
 
-  // Get all days in month
   const daysInMonth = new Date(y, m, 0).getDate();
-  const dayData = [];
   let totalCal = 0, totalProt = 0, daysWithData = 0;
+  const dayData = [];
 
   for (let d = 1; d <= daysInMonth; d++) {
-    const key = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const recs = all[key] || [];
-    const cal = recs.reduce((a, r) => a + r.calories, 0);
-    const prot = recs.reduce((a, r) => a + r.protein, 0);
-    dayData.push({ day: d, key, cal, prot, count: recs.length });
+    const k = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const recs = all[k] || [];
+    const cal  = recs.reduce((a,r) => a+r.calories, 0);
+    const prot = recs.reduce((a,r) => a+r.protein,  0);
+    dayData.push({ d, k, cal, prot, n: recs.length });
     if (recs.length) { totalCal += cal; totalProt += prot; daysWithData++; }
   }
 
-  const maxCal = Math.max(...dayData.map(d => d.cal), 1);
-
-  // Chart (show last 14 days or full month if small)
-  const chartDays = daysInMonth <= 14 ? dayData : dayData.slice(-14);
-  const chartHtml = `
+  const maxCal = Math.max(...dayData.map(x => x.cal), 1);
+  document.getElementById('monthChartEl').innerHTML = `
     <div class="month-chart">
-      <div class="chart-title">每日熱量 / 蛋白質趨勢</div>
-      <div class="chart-bars">
-        ${chartDays.map(d => `
-          <div class="chart-bar-wrap">
-            <div class="chart-bar cal-bar" style="height:${Math.max(d.cal / maxCal * 70, d.cal > 0 ? 4 : 0)}px"></div>
-            <div class="chart-day">${d.day}</div>
+      <div class="chart-title">每日熱量</div>
+      <div class="chart-area">
+        ${dayData.map(x => `
+          <div class="chart-col clickable" onclick="jumpDay('${x.k}')">
+            <div class="chart-bar" style="height:${Math.max(x.cal/maxCal*72, x.cal>0?3:0)}px"></div>
+            <div class="chart-lbl">${x.d}</div>
           </div>`).join('')}
       </div>
-      <div class="chart-legend">
-        <span><div class="legend-dot" style="background:rgba(127,255,110,0.5)"></div>熱量</span>
-      </div>
     </div>`;
 
-  document.getElementById('monthChart').innerHTML = chartHtml;
-
-  document.getElementById('monthSummary').innerHTML = `
+  document.getElementById('monthSummaryEl').innerHTML = `
     <div class="summary-card">
-      <div class="summary-title">本月合計（${daysWithData} 天有紀錄）</div>
+      <div class="summary-top">本月合計（${daysWithData} 天有紀錄）</div>
       <div class="summary-macros">
         <div class="summary-macro"><div class="summary-val" style="color:var(--accent)">${totalCal}</div><div class="summary-lbl">總大卡</div></div>
-        <div class="summary-macro"><div class="summary-val" style="color:var(--accent2)">${totalProt}g</div><div class="summary-lbl">總蛋白質</div></div>
-        <div class="summary-macro"><div class="summary-val" style="color:#c8c8e8">${daysWithData > 0 ? Math.round(totalCal/daysWithData) : 0}</div><div class="summary-lbl">日均大卡</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:var(--accent2)">${totalProt}g</div><div class="summary-lbl">總蛋白</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:#c8c8e8">${daysWithData>0?Math.round(totalCal/daysWithData):0}</div><div class="summary-lbl">日均卡</div></div>
       </div>
     </div>`;
 
-  // Day list for the month
-  const daysWithRecords = dayData.filter(d => d.count > 0).reverse();
-  document.getElementById('monthDayList').innerHTML = daysWithRecords.length ?
-    `<div class="section-header"><div class="section-title">有紀錄的日期</div></div>` +
-    daysWithRecords.map(d => {
-      const date = new Date(d.key + 'T12:00:00');
-      const label = `${m}/${d.day} (${['日','一','二','三','四','五','六'][date.getDay()]})`;
-      return `<div class="hist-day-entry" onclick="jumpToDay('${d.key}')">
-        <div class="hist-thumb">📅</div>
-        <div class="hist-info"><div class="hist-name">${label}</div><div class="hist-time">${d.count} 筆紀錄</div></div>
-        <div class="hist-nums"><div class="hist-cal">${d.cal} kcal</div><div class="hist-prot">蛋白 ${d.prot}g</div></div>
-      </div>`;
-    }).join('')
+  const hasDays = dayData.filter(x => x.n > 0).reverse();
+  const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('monthDaysEl').innerHTML = hasDays.length
+    ? hasDays.map(x => {
+        const dt = new Date(x.k + 'T12:00:00');
+        return `<div class="hist-item clickable" onclick="jumpDay('${x.k}')">
+          <div class="hist-thumb">📅</div>
+          <div class="hist-info"><div class="hist-name">${m}/${x.d} (${days[dt.getDay()]})</div><div class="hist-time">${x.n} 筆紀錄</div></div>
+          <div class="hist-nums"><div class="hist-cal">${x.cal} kcal</div><div class="hist-prot">蛋白 ${x.prot}g</div></div>
+        </div>`;
+      }).join('')
     : `<div class="empty-state">本月尚無紀錄</div>`;
 }
 
-function jumpToDay(key) {
-  currentDay = key;
-  setHistView('day');
+function jumpDay(k) {
+  curDay = k;
+  setView('day');
 }
 
-// ── Data export ────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 匯出 / 清除
+// ═══════════════════════════════════════════════
 function exportData() {
-  const all = getAllRecords();
-  const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
+  const blob = new Blob([JSON.stringify(allRecords(), null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
-  a.href = url; a.download = `nutrilens-${dateKey(new Date())}.json`;
-  a.click(); URL.revokeObjectURL(url);
+  a.href = URL.createObjectURL(blob);
+  a.download = `nutrilens-${todayKey()}.json`;
+  a.click();
 }
-
 function clearAllData() {
-  if (!confirm('⚠️ 確定要清除所有飲食紀錄？此動作無法復原。')) return;
+  if (!confirm('⚠️ 確定清除所有飲食紀錄？')) return;
   localStorage.removeItem('nl_records');
-  renderTodayList();
-  updateProgress();
+  renderTodayList(); updateProgress();
   document.getElementById('resultCard').style.display = 'none';
-  alert('✅ 所有紀錄已清除');
+  alert('已清除');
 }
 
-// ── Helpers ────────────────────────────────────────────
+// ═══════════════════════════════════════════════
+// 錯誤訊息
+// ═══════════════════════════════════════════════
+function friendlyErr(msg) {
+  if (!msg) return '分析失敗，請重試';
+  if (msg.includes('API_KEY_INVALID') || msg.includes('API key')) return 'API Key 無效，請至設定頁面重新確認';
+  if (msg.includes('PERMISSION_DENIED')) return 'API Key 權限不足';
+  if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) return '今日免費額度已用完，明天再試';
+  if (msg.includes('fetch') || msg.includes('Network')) return '網路連線失敗，請確認網路';
+  if (msg.includes('設定')) return msg;
+  return '分析失敗：' + msg;
+}
 function showError(msg) {
   const b = document.getElementById('errorBox');
   b.textContent = '⚠️ ' + msg; b.style.display = 'block';
 }
 function hideError() { document.getElementById('errorBox').style.display = 'none'; }
 
-// ── Robust JSON parser ────────────────────────────────
-function parseGeminiJSON(raw) {
-  if (!raw) return null;
-  // Remove markdown code blocks
-  let cleaned = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
-  // Try direct parse first
-  try { return JSON.parse(cleaned); } catch(e) {}
-  // Find outermost {...}
-  const start = cleaned.indexOf('{');
-  const end = cleaned.lastIndexOf('}');
-  if (start === -1 || end === -1) return null;
-  try { return JSON.parse(cleaned.slice(start, end + 1)); } catch(e) {}
-  // Try to extract line by line and rebuild
-  try {
-    const lines = cleaned.slice(start, end + 1).split('\n');
-    const fixed = lines.join('').replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
-    return JSON.parse(fixed);
-  } catch(e) {}
-  return null;
-}
-
-// ── Init ───────────────────────────────────────────────
-window.onload = function () {
+// ═══════════════════════════════════════════════
+// 初始化
+// ═══════════════════════════════════════════════
+window.onload = function() {
   loadSettings();
-  renderTodayList();
   updateProgress();
-  currentDay = dateKey(new Date());
-  currentMonth = monthKey(new Date());
+  renderTodayList();
 };
 </script>
 </body>

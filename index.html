@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NutriLens 食物營養分析</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #0a0a0f; --card: #1a1a24; --border: #2a2a3a;
+    --accent: #7fff6e; --accent2: #6ee0ff; --text: #f0f0f5;
+    --muted: #7a7a9a; --danger: #ff6e6e;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'DM Sans', sans-serif; min-height: 100vh;
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(127,255,110,0.05) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 100%, rgba(110,224,255,0.05) 0%, transparent 50%);
+  }
+  .app { max-width: 480px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  .header { padding: 28px 0 22px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+  .logo-dot { color: var(--accent); }
+  .logo-badge { display: inline-block; background: rgba(127,255,110,0.12); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.5px; }
+  .sub { color: var(--muted); font-size: 13px; }
+
+  .daily-bar { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 16px; }
+  .stat-col { flex: 1; }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
+  .stat-value span { font-size: 12px; font-weight: 400; color: var(--muted); }
+  .stat-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .stat-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+  .fill-green { background: var(--accent); }
+  .fill-blue { background: var(--accent2); }
+
+  .error-box { background: rgba(255,110,110,0.08); border: 1px solid rgba(255,110,110,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; line-height: 1.6; }
+
+  /* API Key Prompt */
+  .api-prompt { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; }
+  .api-prompt-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .api-prompt-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.8; }
+  .api-steps { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+  .api-steps p { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .api-steps ol { padding-left: 18px; }
+  .api-steps li { font-size: 13px; color: var(--text); margin-bottom: 6px; line-height: 1.6; }
+  .api-steps a { color: var(--accent2); }
+  .api-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; }
+  .api-input:focus { border-color: var(--accent); }
+  .api-save-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .api-save-btn:active { opacity: 0.85; }
+  .api-note { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; }
+
+  /* Upload */
+  .upload-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 40px 20px; text-align: center; margin-bottom: 20px; display: none; }
+  .upload-icon { font-size: 42px; margin-bottom: 12px; }
+  .upload-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .upload-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
+  .upload-actions { display: flex; gap: 10px; justify-content: center; }
+  input[type="file"] { display: none; }
+  .btn { padding: 13px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; }
+  .btn:active { opacity: 0.8; }
+  .btn-primary { background: var(--accent); color: #0a0a0f; }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-sm { font-size: 11px; padding: 6px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  .btn-sm:active { opacity: 0.7; }
+
+  /* Preview */
+  .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; display: none; }
+  .preview-img { width: 100%; max-height: 280px; object-fit: cover; display: block; }
+  .preview-footer { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .analyze-btn { background: var(--accent); color: #0a0a0f; border: none; border-radius: 12px; padding: 13px 26px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .analyze-btn:active { opacity: 0.8; }
+
+  /* Loading */
+  .loading-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 44px; text-align: center; margin-bottom: 20px; display: none; }
+  .spinner { width: 42px; height: 42px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 18px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .loading-sub { font-size: 13px; color: var(--muted); }
+
+  /* Result */
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; display: none; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .result-header { padding: 16px 20px; background: rgba(127,255,110,0.07); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .result-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; flex: 1; }
+  .result-time { font-size: 11px; color: var(--muted); }
+  .result-macros { display: flex; border-bottom: 1px solid var(--border); }
+  .macro-item { flex: 1; padding: 18px; text-align: center; border-right: 1px solid var(--border); }
+  .macro-item:last-child { border-right: none; }
+  .macro-val { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 3px; }
+  .macro-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .food-list { padding: 16px 20px; }
+  .food-list-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .food-item { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(42,42,58,0.5); font-size: 14px; }
+  .food-item:last-child { border-bottom: none; }
+  .food-badges { display: flex; gap: 6px; flex-shrink: 0; margin-left: 8px; }
+  .badge { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .badge-cal { background: rgba(127,255,110,0.12); color: var(--accent); }
+  .badge-prot { background: rgba(110,224,255,0.12); color: var(--accent2); }
+  .result-note { padding: 13px 20px; background: rgba(42,42,58,0.4); font-size: 13px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); }
+
+  /* History */
+  .history-section { display: none; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
+  .history-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .history-thumb { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+  .history-info { flex: 1; min-width: 0; }
+  .history-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .history-time { font-size: 11px; color: var(--muted); }
+  .history-nums { text-align: right; flex-shrink: 0; }
+  .history-cal { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+  .history-prot { font-size: 11px; color: var(--accent2); }
+
+  .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 2.4; display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">🥗 NutriLens<span class="logo-dot">.</span><span class="logo-badge">免費</span></div>
+    <div class="sub">拍照即知熱量與蛋白質　by Gemini AI</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="daily-bar">
+    <div class="stat-col">
+      <div class="stat-label">今日熱量</div>
+      <div class="stat-value" id="calVal">0 <span>/ 2000 kcal</span></div>
+      <div class="stat-bar"><div class="stat-fill fill-green" id="calBar" style="width:0%"></div></div>
+    </div>
+    <div class="stat-col">
+      <div class="stat-label">今日蛋白質</div>
+      <div class="stat-value" id="protVal">0 <span>/ 130 g</span></div>
+      <div class="stat-bar"><div class="stat-fill fill-blue" id="protBar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- API Key -->
+  <div class="api-prompt" id="apiPrompt">
+    <div class="api-prompt-title">🔑 設定 Google Gemini API Key（免費）</div>
+    <div class="api-prompt-sub">需要 Gemini API Key 才能分析食物照片，完全免費申請。</div>
+    <div class="api-steps">
+      <p>申請步驟</p>
+      <ol>
+        <li>前往 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+        <li>用 Google 帳號登入</li>
+        <li>點「Create API key」</li>
+        <li>複製 Key 貼到下方</li>
+      </ol>
+    </div>
+    <input class="api-input" type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off" />
+    <button class="api-save-btn" onclick="saveApiKey()">儲存並開始使用 →</button>
+    <div class="api-note">Key 只儲存在你的瀏覽器，不會外洩</div>
+  </div>
+
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- Upload -->
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon">📷</div>
+    <div class="upload-title">拍照或上傳食物照片</div>
+    <div class="upload-sub">支援 JPG、PNG、HEIC 格式</div>
+    <div class="upload-actions">
+      <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">📸 拍照</button>
+      <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">🖼 選圖片</button>
+    </div>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleFile(this)">
+    <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)">
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-box" id="previewBox">
+    <img id="previewImg" class="preview-img" src="" alt="預覽">
+    <div class="preview-footer">
+      <button class="btn btn-outline" onclick="clearImage()">✕ 清除</button>
+      <button class="analyze-btn" onclick="analyzeImage()">AI 分析 ✦</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-box" id="loadingBox">
+    <div class="spinner"></div>
+    <div class="loading-text">Gemini 正在辨識食物…</div>
+    <div class="loading-sub">分析熱量與蛋白質中，請稍候</div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard"></div>
+
+  <!-- History -->
+  <div class="history-section" id="historySection">
+    <div class="section-header">
+      <div class="section-title">今日紀錄</div>
+      <button class="btn-sm" onclick="clearHistory()">清除紀錄</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    📸 上傳你的第一張餐點照片<br>開始記錄今天的營養攝取
+  </div>
+
+</div>
+<script>
+  let currentImageB64 = null;
+  let currentMediaType = 'image/jpeg';
+  let totalCal = 0, totalProt = 0;
+  const GOAL_CAL = 2000, GOAL_PROT = 130;
+  let history = [];
+
+  // ── API Key ──────────────────────────────────────────
+  function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key.startsWith('AIza')) {
+      showError('請輸入正確的 Gemini API Key（以 AIza 開頭）');
+      return;
+    }
+    localStorage.setItem('nl_gemini_key', key);
+    document.getElementById('apiPrompt').style.display = 'none';
+    document.getElementById('uploadZone').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'block';
+    hideError();
+  }
+
+  function getApiKey() { return localStorage.getItem('nl_gemini_key') || ''; }
+
+  window.onload = function () {
+    if (getApiKey()) {
+      document.getElementById('apiPrompt').style.display = 'none';
+      document.getElementById('uploadZone').style.display = 'block';
+      document.getElementById('emptyState').style.display = 'block';
+    }
+  };
+
+  // ── File ─────────────────────────────────────────────
+  function handleFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    currentMediaType = file.type || 'image/jpeg';
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const dataUrl = e.target.result;
+      currentImageB64 = dataUrl.split(',')[1];
+      document.getElementById('previewImg').src = dataUrl;
+      document.getElementById('uploadZone').style.display = 'none';
+      document.getElementById('previewBox').style.display = 'block';
+      document.getElementById('emptyState').style.display = 'none';
+      hideError();
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  function clearImage() {
+    currentImageB64 = null;
+    document.getElementById('previewBox').style.display = 'none';
+    document.getElementById('uploadZone').style.display = 'block';
+    if (!history.length) document.getElementById('emptyState').style.display = 'block';
+    hideError();
+  }
+
+  // ── Analyze ───────────────────────────────────────────
+  async function analyzeImage() {
+    if (!currentImageB64) return;
+    const apiKey = getApiKey();
+    if (!apiKey) { showError('請先輸入 Gemini API Key'); return; }
+
+    const savedImg = document.getElementById('previewImg').src;
+    document.getElementById('previewBox').style.display = 'none';
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('loadingBox').style.display = 'block';
+    hideError();
+
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              {
+                inline_data: {
+                  mime_type: currentMediaType,
+                  data: currentImageB64
+                }
+              },
+              {
+                text: `你是專業營養師，分析這張食物照片，估算熱量與蛋白質。
+請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
+{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句營養建議（25字內，繁體中文）"}`
+              }
+            ]
+          }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 800 }
+        })
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        const msg = err.error?.message || `HTTP ${resp.status}`;
+        if (msg.includes('API_KEY_INVALID')) throw new Error('API Key 無效，請重新確認');
+        throw new Error(msg);
+      }
+
+      const data = await resp.json();
+      const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const clean = raw.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+
+      const timeStr = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
+      const entry = {
+        id: Date.now(), image: savedImg,
+        mealName: parsed.mealName,
+        calories: Number(parsed.totalCalories),
+        protein: Number(parsed.totalProtein),
+        foods: parsed.foods,
+        note: parsed.note,
+        time: timeStr
+      };
+
+      history.unshift(entry);
+      totalCal += entry.calories;
+      totalProt += entry.protein;
+      updateProgress();
+      renderResult(entry);
+      renderHistory();
+      currentImageB64 = null;
+
+    } catch (err) {
+      showError('分析失敗：' + (err.message || '請確認 API Key 或網路'));
+      document.getElementById('uploadZone').style.display = 'block';
+    } finally {
+      document.getElementById('loadingBox').style.display = 'none';
+    }
+  }
+
+  // ── Render ────────────────────────────────────────────
+  function renderResult(entry) {
+    const foods = entry.foods.map(f =>
+      `<div class="food-item">
+        <span>${f.name}</span>
+        <div class="food-badges">
+          <span class="badge badge-cal">${f.calories} kcal</span>
+          <span class="badge badge-prot">${f.protein}g</span>
+        </div>
+      </div>`).join('');
+
+    document.getElementById('resultCard').innerHTML = `
+      <div class="result-header">
+        <span>✦</span>
+        <span class="result-title">${entry.mealName}</span>
+        <span class="result-time">${entry.time}</span>
+      </div>
+      <div class="result-macros">
+        <div class="macro-item">
+          <div class="macro-val" style="color:var(--accent)">${entry.calories}</div>
+          <div class="macro-label">大卡</div>
+        </div>
+        <div class="macro-item">
+          <div class="macro-val" style="color:var(--accent2)">${entry.protein}g</div>
+          <div class="macro-label">蛋白質</div>
+        </div>
+        <div class="macro-item">
+          <div class="macro-val" style="color:#c8c8e8;font-size:22px">${entry.foods.length}</div>
+          <div class="macro-label">食材</div>
+        </div>
+      </div>
+      <div class="food-list">
+        <div class="food-list-title">食材明細</div>
+        ${foods}
+      </div>
+      ${entry.note ? `<div class="result-note">💡 ${entry.note}</div>` : ''}
+    `;
+    document.getElementById('resultCard').style.display = 'block';
+    document.getElementById('uploadZone').style.display = 'block';
+  }
+
+  function renderHistory() {
+    if (!history.length) return;
+    document.getElementById('historySection').style.display = 'block';
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('historyList').innerHTML = history.map(h =>
+      `<div class="history-item">
+        <img class="history-thumb" src="${h.image}" alt="${h.mealName}">
+        <div class="history-info">
+          <div class="history-name">${h.mealName}</div>
+          <div class="history-time">${h.time}</div>
+        </div>
+        <div class="history-nums">
+          <div class="history-cal">${h.calories} kcal</div>
+          <div class="history-prot">蛋白 ${h.protein}g</div>
+        </div>
+      </div>`
+    ).join('');
+  }
+
+  function clearHistory() {
+    history = []; totalCal = 0; totalProt = 0;
+    updateProgress();
+    document.getElementById('historySection').style.display = 'none';
+    document.getElementById('resultCard').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+  }
+
+  function updateProgress() {
+    document.getElementById('calVal').innerHTML = `${totalCal} <span>/ ${GOAL_CAL} kcal</span>`;
+    document.getElementById('protVal').innerHTML = `${totalProt} <span>/ ${GOAL_PROT} g</span>`;
+    document.getElementById('calBar').style.width = Math.min(totalCal / GOAL_CAL * 100, 100) + '%';
+    document.getElementById('protBar').style.width = Math.min(totalProt / GOAL_PROT * 100, 100) + '%';
+  }
+
+  function showError(msg) {
+    const b = document.getElementById('errorBox');
+    b.textContent = '⚠️ ' + msg; b.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function hideError() { document.getElementById('errorBox').style.display = 'none'; }
+</script>
+</body>
+</html>

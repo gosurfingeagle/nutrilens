@@ -554,9 +554,8 @@ async function analyzeImage() {
     const data = await resp.json();
     if (!data.candidates?.length) throw new Error('未收到 AI 回應');
     const raw = data.candidates[0]?.content?.parts?.[0]?.text || '';
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('無法解析 AI 回應');
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsed = parseGeminiJSON(raw);
+    if (!parsed) throw new Error('無法解析 AI 回應');
 
     const entry = {
       id: Date.now(), type: 'ai', image: savedImg,
@@ -648,9 +647,8 @@ async function submitManual() {
     if (!resp) throw new Error(lastErr || '無法連接 API');
     const data = await resp.json();
     const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('無法解析回應');
-    const parsed = JSON.parse(jsonMatch[0]);
+    const parsed = parseGeminiJSON(raw);
+    if (!parsed) throw new Error('無法解析回應');
 
     const entry = {
       id: Date.now(), type: 'manual', image: null,
@@ -937,6 +935,27 @@ function showError(msg) {
   b.textContent = '⚠️ ' + msg; b.style.display = 'block';
 }
 function hideError() { document.getElementById('errorBox').style.display = 'none'; }
+
+// ── Robust JSON parser ────────────────────────────────
+function parseGeminiJSON(raw) {
+  if (!raw) return null;
+  // Remove markdown code blocks
+  let cleaned = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+  // Try direct parse first
+  try { return JSON.parse(cleaned); } catch(e) {}
+  // Find outermost {...}
+  const start = cleaned.indexOf('{');
+  const end = cleaned.lastIndexOf('}');
+  if (start === -1 || end === -1) return null;
+  try { return JSON.parse(cleaned.slice(start, end + 1)); } catch(e) {}
+  // Try to extract line by line and rebuild
+  try {
+    const lines = cleaned.slice(start, end + 1).split('\n');
+    const fixed = lines.join('').replace(/,\s*}/g, '}').replace(/,\s*]/g, ']');
+    return JSON.parse(fixed);
+  } catch(e) {}
+  return null;
+}
 
 // ── Init ───────────────────────────────────────────────
 window.onload = function () {

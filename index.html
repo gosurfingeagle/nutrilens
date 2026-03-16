@@ -23,7 +23,7 @@
   .header { padding: 28px 0 22px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
   .logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 4px; }
   .logo-dot { color: var(--accent); }
-  .logo-badge { display: inline-block; background: rgba(127,255,110,0.12); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.5px; }
+  .logo-badge { display: inline-block; background: rgba(127,255,110,0.12); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
   .sub { color: var(--muted); font-size: 13px; }
 
   .daily-bar { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 16px; }
@@ -36,24 +36,25 @@
   .fill-green { background: var(--accent); }
   .fill-blue { background: var(--accent2); }
 
-  .error-box { background: rgba(255,110,110,0.08); border: 1px solid rgba(255,110,110,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; line-height: 1.6; }
+  .error-box { background: rgba(255,110,110,0.08); border: 1px solid rgba(255,110,110,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; line-height: 1.7; }
+  .error-detail { font-size: 11px; color: var(--muted); margin-top: 6px; word-break: break-all; }
 
-  /* API Key Prompt */
   .api-prompt { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; }
   .api-prompt-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 8px; }
   .api-prompt-sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.8; }
   .api-steps { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
-  .api-steps p { font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
+  .api-steps p { font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
   .api-steps ol { padding-left: 18px; }
   .api-steps li { font-size: 13px; color: var(--text); margin-bottom: 6px; line-height: 1.6; }
   .api-steps a { color: var(--accent2); }
   .api-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; }
   .api-input:focus { border-color: var(--accent); }
-  .api-save-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
-  .api-save-btn:active { opacity: 0.85; }
+  .api-row { display: flex; gap: 8px; }
+  .api-save-btn { flex: 1; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .api-clear-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
   .api-note { font-size: 11px; color: var(--muted); margin-top: 10px; text-align: center; }
+  .api-note a { color: var(--accent2); }
 
-  /* Upload */
   .upload-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 40px 20px; text-align: center; margin-bottom: 20px; display: none; }
   .upload-icon { font-size: 42px; margin-bottom: 12px; }
   .upload-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 6px; }
@@ -65,23 +66,19 @@
   .btn-primary { background: var(--accent); color: #0a0a0f; }
   .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
   .btn-sm { font-size: 11px; padding: 6px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; }
-  .btn-sm:active { opacity: 0.7; }
 
-  /* Preview */
   .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; display: none; }
   .preview-img { width: 100%; max-height: 280px; object-fit: cover; display: block; }
   .preview-footer { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
   .analyze-btn { background: var(--accent); color: #0a0a0f; border: none; border-radius: 12px; padding: 13px 26px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
   .analyze-btn:active { opacity: 0.8; }
 
-  /* Loading */
   .loading-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 44px; text-align: center; margin-bottom: 20px; display: none; }
   .spinner { width: 42px; height: 42px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 18px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
   .loading-sub { font-size: 13px; color: var(--muted); }
 
-  /* Result */
   .result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 20px; display: none; animation: fadeUp 0.4s ease; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   .result-header { padding: 16px 20px; background: rgba(127,255,110,0.07); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
@@ -102,7 +99,6 @@
   .badge-prot { background: rgba(110,224,255,0.12); color: var(--accent2); }
   .result-note { padding: 13px 20px; background: rgba(42,42,58,0.4); font-size: 13px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); }
 
-  /* History */
   .history-section { display: none; }
   .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
   .section-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
@@ -114,7 +110,6 @@
   .history-nums { text-align: right; flex-shrink: 0; }
   .history-cal { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
   .history-prot { font-size: 11px; color: var(--accent2); }
-
   .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 2.4; display: none; }
 </style>
 </head>
@@ -126,7 +121,6 @@
     <div class="sub">拍照即知熱量與蛋白質　by Gemini AI</div>
   </div>
 
-  <!-- Progress -->
   <div class="daily-bar">
     <div class="stat-col">
       <div class="stat-label">今日熱量</div>
@@ -143,22 +137,28 @@
   <!-- API Key -->
   <div class="api-prompt" id="apiPrompt">
     <div class="api-prompt-title">🔑 設定 Google Gemini API Key（免費）</div>
-    <div class="api-prompt-sub">需要 Gemini API Key 才能分析食物照片，完全免費申請。</div>
+    <div class="api-prompt-sub">需要 Gemini API Key 才能分析食物照片，完全免費不需綁信用卡。</div>
     <div class="api-steps">
       <p>申請步驟</p>
       <ol>
-        <li>前往 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+        <li>前往 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio →</a></li>
         <li>用 Google 帳號登入</li>
-        <li>點「Create API key」</li>
-        <li>複製 Key 貼到下方</li>
+        <li>點「Create API key」→「Create API key in new project」</li>
+        <li>複製 Key（以 AIzaSy 開頭）貼到下方</li>
       </ol>
     </div>
     <input class="api-input" type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off" />
-    <button class="api-save-btn" onclick="saveApiKey()">儲存並開始使用 →</button>
-    <div class="api-note">Key 只儲存在你的瀏覽器，不會外洩</div>
+    <div class="api-row">
+      <button class="api-save-btn" onclick="saveApiKey()">儲存並開始使用 →</button>
+      <button class="api-clear-btn" onclick="clearApiKey()">重設</button>
+    </div>
+    <div class="api-note">Key 只存在你的瀏覽器，不會傳送到任何伺服器</div>
   </div>
 
-  <div class="error-box" id="errorBox"></div>
+  <div class="error-box" id="errorBox">
+    <div id="errorMsg"></div>
+    <div class="error-detail" id="errorDetail"></div>
+  </div>
 
   <!-- Upload -->
   <div class="upload-zone" id="uploadZone">
@@ -216,8 +216,8 @@
   // ── API Key ──────────────────────────────────────────
   function saveApiKey() {
     const key = document.getElementById('apiKeyInput').value.trim();
-    if (!key.startsWith('AIza')) {
-      showError('請輸入正確的 Gemini API Key（以 AIza 開頭）');
+    if (!key || key.length < 20) {
+      showError('請輸入正確的 Gemini API Key', '');
       return;
     }
     localStorage.setItem('nl_gemini_key', key);
@@ -225,6 +225,14 @@
     document.getElementById('uploadZone').style.display = 'block';
     document.getElementById('emptyState').style.display = 'block';
     hideError();
+  }
+
+  function clearApiKey() {
+    localStorage.removeItem('nl_gemini_key');
+    document.getElementById('apiKeyInput').value = '';
+    document.getElementById('apiPrompt').style.display = 'block';
+    document.getElementById('uploadZone').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'none';
   }
 
   function getApiKey() { return localStorage.getItem('nl_gemini_key') || ''; }
@@ -241,16 +249,31 @@
   function handleFile(input) {
     const file = input.files[0];
     if (!file) return;
-    currentMediaType = file.type || 'image/jpeg';
+
+    // 壓縮大圖，避免 API 超過限制
+    const img = new Image();
     const reader = new FileReader();
     reader.onload = function (e) {
-      const dataUrl = e.target.result;
-      currentImageB64 = dataUrl.split(',')[1];
-      document.getElementById('previewImg').src = dataUrl;
-      document.getElementById('uploadZone').style.display = 'none';
-      document.getElementById('previewBox').style.display = 'block';
-      document.getElementById('emptyState').style.display = 'none';
-      hideError();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        const MAX = 1024;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const compressed = canvas.toDataURL('image/jpeg', 0.85);
+        currentImageB64 = compressed.split(',')[1];
+        currentMediaType = 'image/jpeg';
+        document.getElementById('previewImg').src = compressed;
+        document.getElementById('uploadZone').style.display = 'none';
+        document.getElementById('previewBox').style.display = 'block';
+        document.getElementById('emptyState').style.display = 'none';
+        hideError();
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
     input.value = '';
@@ -268,7 +291,7 @@
   async function analyzeImage() {
     if (!currentImageB64) return;
     const apiKey = getApiKey();
-    if (!apiKey) { showError('請先輸入 Gemini API Key'); return; }
+    if (!apiKey) { showError('請先輸入 Gemini API Key', ''); return; }
 
     const savedImg = document.getElementById('previewImg').src;
     document.getElementById('previewBox').style.display = 'none';
@@ -277,50 +300,65 @@
     hideError();
 
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              {
-                inline_data: {
-                  mime_type: currentMediaType,
-                  data: currentImageB64
-                }
-              },
-              {
-                text: `你是專業營養師，分析這張食物照片，估算熱量與蛋白質。
-請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
-{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句營養建議（25字內，繁體中文）"}`
-              }
-            ]
-          }],
-          generationConfig: { temperature: 0.2, maxOutputTokens: 800 }
-        })
-      });
+      // 依序嘗試可用模型
+      const models = ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-2.0-flash-exp'];
+      let resp = null;
+      let lastErr = '';
 
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}));
-        const msg = err.error?.message || `HTTP ${resp.status}`;
-        if (msg.includes('API_KEY_INVALID')) throw new Error('API Key 無效，請重新確認');
-        throw new Error(msg);
+      for (const model of models) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        try {
+          resp = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { inline_data: { mime_type: currentMediaType, data: currentImageB64 } },
+                  { text: `你是專業營養師。請分析這張食物照片並估算熱量和蛋白質。
+只回傳 JSON，不要加 markdown、不要加說明文字：
+{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"foods":[{"name":"食物名稱","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}` }
+                ]
+              }],
+              generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+            })
+          });
+          if (resp.ok) break;
+          const errData = await resp.json().catch(() => ({}));
+          lastErr = errData.error?.message || `HTTP ${resp.status}`;
+          resp = null;
+        } catch (e) {
+          lastErr = e.message;
+          resp = null;
+        }
       }
 
+      if (!resp) throw new Error(lastErr || '無法連接 Gemini API');
+
       const data = await resp.json();
-      const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const clean = raw.replace(/```json|```/g, '').trim();
-      const parsed = JSON.parse(clean);
+
+      // 檢查是否有 candidates
+      if (!data.candidates || data.candidates.length === 0) {
+        const blocked = data.promptFeedback?.blockReason;
+        throw new Error(blocked ? `圖片被封鎖：${blocked}` : '未收到 AI 回應');
+      }
+
+      const raw = data.candidates[0]?.content?.parts?.[0]?.text || '';
+      if (!raw) throw new Error('AI 回應為空');
+
+      // 清理並解析 JSON（處理 Gemini 有時加 markdown 的情況）
+      const jsonMatch = raw.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('無法解析 AI 回應格式');
+      const parsed = JSON.parse(jsonMatch[0]);
 
       const timeStr = new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
       const entry = {
         id: Date.now(), image: savedImg,
-        mealName: parsed.mealName,
-        calories: Number(parsed.totalCalories),
-        protein: Number(parsed.totalProtein),
-        foods: parsed.foods,
-        note: parsed.note,
+        mealName: parsed.mealName || '未知餐點',
+        calories: Number(parsed.totalCalories) || 0,
+        protein: Number(parsed.totalProtein) || 0,
+        foods: Array.isArray(parsed.foods) ? parsed.foods : [],
+        note: parsed.note || '',
         time: timeStr
       };
 
@@ -333,7 +371,24 @@
       currentImageB64 = null;
 
     } catch (err) {
-      showError('分析失敗：' + (err.message || '請確認 API Key 或網路'));
+      let msg = '分析失敗，請重試';
+      let detail = err.message || '';
+
+      if (detail.includes('API_KEY_INVALID') || detail.includes('API key')) {
+        msg = 'API Key 無效，請重新確認';
+        detail = '點「重設」按鈕重新輸入 Key';
+      } else if (detail.includes('PERMISSION_DENIED')) {
+        msg = 'API Key 權限不足';
+        detail = '請確認 AI Studio 中 Key 已啟用';
+      } else if (detail.includes('quota') || detail.includes('RESOURCE_EXHAUSTED')) {
+        msg = '今日免費額度已用完';
+        detail = '明天再試，或申請新的 API Key';
+      } else if (detail.includes('Failed to fetch') || detail.includes('NetworkError')) {
+        msg = '網路連線失敗';
+        detail = '請確認網路正常後重試';
+      }
+
+      showError(msg, detail);
       document.getElementById('uploadZone').style.display = 'block';
     } finally {
       document.getElementById('loadingBox').style.display = 'none';
@@ -373,7 +428,7 @@
       </div>
       <div class="food-list">
         <div class="food-list-title">食材明細</div>
-        ${foods}
+        ${foods || '<div style="color:var(--muted);font-size:13px">無法識別個別食材</div>'}
       </div>
       ${entry.note ? `<div class="result-note">💡 ${entry.note}</div>` : ''}
     `;
@@ -415,9 +470,10 @@
     document.getElementById('protBar').style.width = Math.min(totalProt / GOAL_PROT * 100, 100) + '%';
   }
 
-  function showError(msg) {
-    const b = document.getElementById('errorBox');
-    b.textContent = '⚠️ ' + msg; b.style.display = 'block';
+  function showError(msg, detail) {
+    document.getElementById('errorMsg').textContent = '⚠️ ' + msg;
+    document.getElementById('errorDetail').textContent = detail || '';
+    document.getElementById('errorBox').style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
   function hideError() { document.getElementById('errorBox').style.display = 'none'; }

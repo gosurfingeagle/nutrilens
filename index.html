@@ -177,6 +177,10 @@
   .clear-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
 
   .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 2.4; }
+  .quick-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+  .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quick-chip { background: rgba(255,184,110,0.1); border: 1px solid rgba(255,184,110,0.25); color: var(--accent3); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
+  .quick-chip:active { opacity: 0.7; }
 </style>
 </head>
 <body>
@@ -232,14 +236,36 @@
     <!-- 手動輸入區 -->
     <div class="manual-box" id="manualBox">
       <div class="manual-title">✏️ 手動輸入食物</div>
-      <div class="manual-hint">輸入食物名稱，AI 自動查詢熱量與蛋白質。<br>若你已知數值，直接填入不需呼叫 AI。</div>
-      <input class="input-field" type="text" id="manualFood" placeholder="例如：豆漿 300ml、水煮蛋 2顆" />
-      <div class="manual-row-wrap">
-        <div class="manual-row">
-          <input class="input-field" type="number" id="manualCal" placeholder="熱量 kcal（選填）" min="0">
-          <input class="input-field" type="number" id="manualProt" placeholder="蛋白質 g（選填）" min="0">
-        </div>
+      <div class="manual-hint">輸入食物名稱與份量，AI 自動查詢熱量與蛋白質。<br>若你已知數值，直接填入不需呼叫 AI。</div>
+
+      <!-- 常用食物快選 -->
+      <div id="quickPickWrap" style="display:none;margin-bottom:10px">
+        <div class="quick-label">📌 最近使用</div>
+        <div id="quickPickList"></div>
       </div>
+
+      <!-- 食物名稱 + 數量 -->
+      <div class="manual-row">
+        <input class="input-field" type="text" id="manualFood" placeholder="食物名稱（例：豆漿）" oninput="onFoodInput()" autocomplete="off" style="flex:2">
+        <input class="input-field" type="number" id="manualQty" placeholder="份量" min="0" style="flex:1">
+        <select class="input-field" id="manualUnit" style="flex:1;padding:12px 6px">
+          <option value="ml">ml</option>
+          <option value="g">g</option>
+          <option value="份">份</option>
+          <option value="顆">顆</option>
+          <option value="片">片</option>
+          <option value="碗">碗</option>
+          <option value="杯">杯</option>
+          <option value="匙">匙</option>
+        </select>
+      </div>
+
+      <!-- 熱量 / 蛋白質 -->
+      <div class="manual-row" style="margin-top:8px">
+        <input class="input-field" type="number" id="manualCal" placeholder="熱量 kcal（選填）" min="0">
+        <input class="input-field" type="number" id="manualProt" placeholder="蛋白質 g（選填）" min="0">
+      </div>
+
       <button class="manual-submit" onclick="submitManual()">新增 ✦</button>
     </div>
 
@@ -464,6 +490,7 @@ function toggleSection(name) {
   }
   document.getElementById('uploadZone').style.display = activeSection === 'upload' ? 'block' : 'none';
   document.getElementById('manualBox').style.display  = activeSection === 'manual' ? 'block' : 'none';
+  if (activeSection === 'manual') renderQuickPick();
 }
 
 // ═══════════════════════════════════════════════
@@ -594,18 +621,65 @@ async function analyzeImage() {
 // ═══════════════════════════════════════════════
 // 手動輸入
 // ═══════════════════════════════════════════════
+// ── 食物歷史（快選）─────────────────────────────────
+function getFoodHistory() {
+  try { return JSON.parse(localStorage.getItem('nl_food_history') || '[]'); } catch(e) { return []; }
+}
+function saveFoodToHistory(food, qty, unit, cal, prot) {
+  let hist = getFoodHistory();
+  // 移除重複
+  hist = hist.filter(h => !(h.food === food && h.unit === unit));
+  // 最新的放最前面
+  hist.unshift({ food, qty, unit, cal, prot });
+  // 只保留最近 20 筆
+  hist = hist.slice(0, 20);
+  localStorage.setItem('nl_food_history', JSON.stringify(hist));
+}
+
+function onFoodInput() {
+  renderQuickPick();
+}
+
+function renderQuickPick() {
+  const hist = getFoodHistory();
+  const wrap = document.getElementById('quickPickWrap');
+  const list = document.getElementById('quickPickList');
+  if (!hist.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = '<div class="quick-chips">' +
+    hist.map((h, i) => {
+      const label = `${h.food} ${h.qty || ''}${h.unit || ''}`;
+      return `<div class="quick-chip" onclick="applyQuickPick(${i})">${label}</div>`;
+    }).join('') + '</div>';
+}
+
+function applyQuickPick(i) {
+  const h = getFoodHistory()[i];
+  if (!h) return;
+  document.getElementById('manualFood').value = h.food;
+  document.getElementById('manualQty').value  = h.qty || '';
+  document.getElementById('manualUnit').value = h.unit || 'g';
+  if (h.cal)  document.getElementById('manualCal').value  = h.cal;
+  if (h.prot) document.getElementById('manualProt').value = h.prot;
+}
+
 async function submitManual() {
   const food = document.getElementById('manualFood').value.trim();
+  const qty  = document.getElementById('manualQty').value.trim();
+  const unit = document.getElementById('manualUnit').value;
   if (!food) { showError('請輸入食物名稱'); return; }
+
+  const fullName = qty ? `${food} ${qty}${unit}` : food;
   const cal  = parseFloat(document.getElementById('manualCal').value);
   const prot = parseFloat(document.getElementById('manualProt').value);
 
   // 兩個都填了 → 直接新增，不需 AI
   if (!isNaN(cal) && !isNaN(prot)) {
+    saveFoodToHistory(food, qty, unit, cal, prot);
     const entry = {
       id: Date.now(), type: 'manual', image: null,
-      mealName: food, calories: cal, protein: prot,
-      foods: [{ name: food, calories: cal, protein: prot }],
+      mealName: fullName, calories: cal, protein: prot,
+      foods: [{ name: fullName, calories: cal, protein: prot }],
       note: '', time: fmtTime()
     };
     finishEntry(entry);
@@ -619,13 +693,14 @@ async function submitManual() {
   document.getElementById('loadingText').textContent = 'AI 查詢營養數據中…';
   hideError();
   try {
-    const raw = await callGemini([{ text: MANUAL_PROMPT(food, isNaN(prot) ? null : prot) }]);
+    const raw = await callGemini([{ text: MANUAL_PROMPT(fullName, isNaN(prot) ? null : prot) }]);
     const parsed = parseJSON(raw);
     if (!parsed) throw new Error('無法解析 AI 回應');
     const entry = makeEntry('manual', null, parsed);
-    // 若使用者有填其中一個，覆蓋 AI 數值
+    entry.mealName = fullName;
     if (!isNaN(cal))  entry.calories = cal;
     if (!isNaN(prot)) entry.protein  = prot;
+    saveFoodToHistory(food, qty, unit, entry.calories, entry.protein);
     finishEntry(entry);
     clearManualForm();
   } catch(err) {
@@ -638,6 +713,7 @@ async function submitManual() {
 
 function clearManualForm() {
   document.getElementById('manualFood').value = '';
+  document.getElementById('manualQty').value  = '';
   document.getElementById('manualCal').value  = '';
   document.getElementById('manualProt').value = '';
   activeSection = null;

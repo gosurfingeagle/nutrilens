@@ -730,17 +730,21 @@ async function callGemini(parts) {
 
 // 與可用版本一模一樣的 prompt + 解析
 const FOOD_PROMPT = `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析、管理與血糖控制。
-飲食分析的順序：
-- 仔細觀察照片，辨識每一樣食物（主食、菜色、醬料都要列出）：
-- 主食以台灣常見份量為基準估算重量（飯碗八分滿≈160g、使用便當≈200g，如果只有一半≈100g勿高估）
-- 食物對血糖的影響依照「升糖指數」(GI值)與「飯後血糖值」檢測
-- 考慮烹調方式估算熱量（炸>炒>蒸煮）
-- confidence：辨識信心 0–100（照片清晰給高分）
-- glucoseScore：血糖衝擊 0–100（精緻澱粉多、纖維少則高分）
-- glucoseLevel："low"（<40）/ "medium"（40–70）/ "high"（>70）
-- glucoseNote：30字內說明血糖影響原因
-只回傳 JSON，不加任何說明或 markdown：
-{"mealName":"繁體中文餐點名稱","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low或medium或high","glucoseNote":"說明","foods":[{"name":"食物名稱","amount":"份量如160g","calories":數字,"protein":數字}],"note":"25字內營養建議"}`;
+飲食分析的順序與原則：
+- 仔細觀察照片，辨識每一樣食物（主食、配菜、湯品、醬料都要列出）。如果照片中沒有食物或完全無法辨識，請將 isFood 設為 false。
+- 份量以台灣常見標準為基準估算：
+  - 主食：飯碗八分滿≈160g、一般便當盒平鋪≈200g，若只有半格≈100g，請勿高估。
+  - 蛋白質：手掌心大小的肉排約提供 20g-25g 蛋白質，一顆洗選蛋約 7g 蛋白質。
+- 評估血糖影響：依照「升糖指數」(GI值)、「總碳水化合物含量」與「膳食纖維比例」綜合檢測。
+- 考慮烹調方式估算熱量與脂肪（油炸>煎炒>勾芡>蒸煮）。
+評分與指標定義：
+- confidence：辨識信心 0–100（照片清晰且特徵明顯給高分，反之給低分）。
+- glucoseScore：血糖衝擊 0–100（精緻澱粉多、含糖量高、纖維少則給高分）。
+- glucoseLevel："low"（<40）/ "medium"（40–70）/ "high"（>70）。
+- glucoseNote：30字內說明血糖影響原因。
+【強制輸出格式】
+絕對不要輸出任何解釋文字，也絕對不要使用 \`\`\`json 或 \`\`\` 等 markdown 標記。你的回覆必須直接以 { 開頭，並以 } 結尾的純 JSON 格式回傳：
+{"isFood":true,"mealName":"繁體中文餐點名稱","totalCalories":數字,"totalCarbs":數字,"totalProtein":數字,"totalFat":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low或medium或high","glucoseNote":"說明","foods":[{"name":"食物名稱","amount":"份量如160g或1碗","calories":數字,"carbs":數字,"protein":數字,"fat":數字}],"note":"25字內具體的台灣飲食改善建議"}`;
 
 const MANUAL_PROMPT = (food, prot) =>
   `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。
@@ -902,12 +906,16 @@ function clearManualForm() {
 // 共用：建立 entry、完成流程
 // ═══════════════════════════════════════════════
 function makeEntry(type, image, parsed) {
+  // 如果 AI 判斷不是食物，直接拋出錯誤
+  if (parsed.isFood === false) throw new Error('NO_FOOD');
   return {
     id: Date.now(), type, image,
-    mealName: parsed.mealName || '未知餐點',
-    calories: Number(parsed.totalCalories) || 0,
-    protein:  Number(parsed.totalProtein)  || 0,
-    confidence: parsed.confidence !== undefined ? Number(parsed.confidence) : undefined,
+    mealName:     parsed.mealName    || '未知餐點',
+    calories:     Number(parsed.totalCalories) || 0,
+    carbs:        Number(parsed.totalCarbs)    || 0,
+    protein:      Number(parsed.totalProtein)  || 0,
+    fat:          Number(parsed.totalFat)      || 0,
+    confidence:   parsed.confidence  !== undefined ? Number(parsed.confidence)  : undefined,
     glucoseScore: parsed.glucoseScore !== undefined ? Number(parsed.glucoseScore) : undefined,
     glucoseLevel: parsed.glucoseLevel || undefined,
     glucoseNote:  parsed.glucoseNote  || undefined,
@@ -936,7 +944,9 @@ function renderResult(entry) {
        </div>
        <div class="food-badges">
          <span class="badge badge-cal">${f.calories} kcal</span>
-         <span class="badge badge-prot">${f.protein}g</span>
+         <span class="badge badge-prot">${f.protein}g 蛋白</span>
+         ${f.carbs ? `<span class="badge" style="background:rgba(255,184,110,0.12);color:#ffb86e">${f.carbs}g 碳水</span>` : ''}
+         ${f.fat   ? `<span class="badge" style="background:rgba(255,158,181,0.12);color:#ff9eb5">${f.fat}g 脂肪</span>` : ''}
        </div>
      </div>`).join('');
 
@@ -986,7 +996,8 @@ function renderResult(entry) {
     <div class="result-macros">
       <div class="macro-item"><div class="macro-val" style="color:var(--accent)">${entry.calories}</div><div class="macro-label">大卡</div></div>
       <div class="macro-item"><div class="macro-val" style="color:var(--accent2)">${entry.protein}g</div><div class="macro-label">蛋白質</div></div>
-      <div class="macro-item"><div class="macro-val" style="color:#c8c8e8;font-size:20px">${entry.foods.length}</div><div class="macro-label">食材</div></div>
+      <div class="macro-item"><div class="macro-val" style="color:#ffb86e">${entry.carbs || 0}g</div><div class="macro-label">碳水</div></div>
+      <div class="macro-item"><div class="macro-val" style="color:#ff9eb5">${entry.fat || 0}g</div><div class="macro-label">脂肪</div></div>
     </div>
     ${confHtml}
     ${glucoseHtml}

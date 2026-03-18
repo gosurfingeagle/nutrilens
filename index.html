@@ -729,34 +729,30 @@ async function callGemini(parts) {
 }
 
 // 與可用版本一模一樣的 prompt + 解析
-const FOOD_PROMPT = `你是擁有20年經驗的台灣專業營養師，同時具備糖尿病衛教師資格，專精於飲食熱量分析、血糖控制與體重管理。請以你的專業仔細分析這張食物照片。
-
-分析規則：
-1. 【食物辨識】辨識照片中每一樣食材，包括配菜、醬料、配料
-2. 【份量估算】觀察碗盤大小、餐具作為比例參考，估算每樣食材的重量或份量
-3. 【飯量校正】⚠️ 白飯、糙米飯、炒飯視覺體積蓬鬆容易高估，請保守估算：
-   - 一般台灣飯碗裝八分滿 = 約 150–180g（約 200–250 kcal）
-   - 便當盒的飯 = 約 180–220g（約 250–300 kcal）
-   - 看起來很多也不要超過 300g，除非是特大碗
-4. 【台灣食物標準】以台灣常見食物的熱量資料庫為基準（例如：台灣便當、小吃、家常菜）
-5. 【烹調影響】考慮烹調方式對熱量的影響（清蒸/水煮熱量最低，炸物熱量最高）
-6. 【信心程度】評估你對這次辨識的信心（0-100），若照片模糊或食物遮擋請給低分
-7. 【血糖影響】評估這餐對血糖的整體影響：glucoseScore 為 0-100 分（分數越高衝擊越大），glucoseLevel 為 "low"/"medium"/"high"，glucoseNote 為一句說明原因（含GI值概念、碳水比例、纖維量等）
-
-請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
-{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low/medium/high","glucoseNote":"血糖影響說明（30字內）","foods":[{"name":"食物名稱","amount":"估算份量例如200g或1碗","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
+const FOOD_PROMPT = `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析、管理與血糖控制。
+飲食分析的順序：
+- 仔細觀察照片，辨識每一樣食物（主食、菜色、醬料都要列出）：
+- 主食以台灣常見份量為基準估算重量（飯碗八分滿≈160g、使用便當≈200g，如果只有一半≈100g勿高估）
+- 食物對血糖的影響依照「升糖指數」(GI值)與「飯後血糖值」檢測
+- 考慮烹調方式估算熱量（炸>炒>蒸煮）
+- confidence：辨識信心 0–100（照片清晰給高分）
+- glucoseScore：血糖衝擊 0–100（精緻澱粉多、纖維少則高分）
+- glucoseLevel："low"（<40）/ "medium"（40–70）/ "high"（>70）
+- glucoseNote：30字內說明血糖影響原因
+只回傳 JSON，不加任何說明或 markdown：
+{"mealName":"繁體中文餐點名稱","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low或medium或high","glucoseNote":"說明","foods":[{"name":"食物名稱","amount":"份量如160g","calories":數字,"protein":數字}],"note":"25字內營養建議"}`;
 
 const MANUAL_PROMPT = (food, prot) =>
-  `你是擁有20年經驗的台灣專業營養師，同時具備糖尿病衛教師資格，專精於飲食熱量分析、血糖控制與體重管理。請估算以下食物的熱量與蛋白質：「${food}」${prot ? `（蛋白質已知為 ${prot}g）` : ''}
+  `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。
 
-分析規則：
-1. 以台灣常見食物的熱量資料庫為基準
-2. 依照指定的份量（ml 或 g）精確計算，不要用預設份量
-3. confidence 為估算信心分數（0-100），食物名稱越明確分數越高
-4. glucoseScore 為血糖衝擊分數（0-100），glucoseLevel 為 "low"/"medium"/"high"，glucoseNote 為說明
+請估算「${food}」的營養數據${prot ? `（蛋白質已知：${prot}g，熱量請自行估算）` : ''}：
+- 以台灣食物資料庫為基準，依實際份量精確計算
+- confidence：估算信心 0–100（食物描述越清楚分數越高）
+- glucoseScore：血糖衝擊 0–100
+- glucoseLevel："low"（<40）/ "medium"（40–70）/ "high"（>70）
 
-請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
-{"mealName":"食物名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low/medium/high","glucoseNote":"血糖影響說明（30字內）","foods":[{"name":"食物名稱","amount":"份量","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
+只回傳 JSON，不加任何說明或 markdown：
+{"mealName":"繁體中文食物名稱","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low或medium或high","glucoseNote":"說明","foods":[{"name":"食物名稱","amount":"份量","calories":數字,"protein":數字}],"note":"25字內營養建議"}`;
 
 function parseJSON(raw) {
   if (!raw) return null;

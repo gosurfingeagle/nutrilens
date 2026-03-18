@@ -249,7 +249,10 @@
     <div class="upload-zone" id="uploadZone">
       <div class="upload-icon">📷</div>
       <div class="upload-title">拍照或上傳食物照片</div>
-      <div class="upload-sub">支援 JPG、PNG、HEIC 格式</div>
+      <div class="upload-sub">照片越清晰、光線越好，辨識越準確</div>
+      <input class="input-field" type="text" id="extraHint"
+        placeholder="💬 補充說明（選填）：例如「素食便當」、「麵腸不是大腸」"
+        style="margin-bottom:12px;font-size:13px;text-align:left;">
       <div class="upload-actions">
         <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">📸 拍照</button>
         <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">🖼 選圖片</button>
@@ -729,14 +732,16 @@ async function callGemini(parts) {
 }
 
 // 與可用版本一模一樣的 prompt + 解析
-const FOOD_PROMPT = `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析、管理與血糖控制。
+const FOOD_PROMPT = (extra) => `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析、管理與血糖控制。
 飲食分析的順序與原則：
 - 仔細觀察照片，辨識每一樣食物（主食、配菜、湯品、醬料都要列出）。如果照片中沒有食物或完全無法辨識，請將 isFood 設為 false。
+- ⚠️【台式食材警示】台灣便當常見「麵腸、麵筋、烤麩、素雞、豆包」等素料或豆類製品。它們滷製後外觀極度類似「滷大腸」或「滷肉」。請仔細觀察表面紋理：若無明顯動物脂肪、皮下組織或腸壁特徵，請優先判定為「麵腸」或豆製品，切勿誤判為高脂肉類！
 - 份量以台灣常見標準為基準估算：
   - 主食：飯碗八分滿≈160g、一般便當盒平鋪≈200g，若只有半格≈100g，請勿高估。
   - 蛋白質：手掌心大小的肉排約提供 20g-25g 蛋白質，一顆洗選蛋約 7g 蛋白質。
 - 評估血糖影響：依照「升糖指數」(GI值)、「總碳水化合物含量」與「膳食纖維比例」綜合檢測。
-- 考慮烹調方式估算熱量與脂肪（油炸>煎炒>勾芡>蒸煮）。
+- 考慮烹調方式估算熱量與脂肪（油炸>煎炒>勾芡>蒸煮）。${extra ? `
+- 【使用者補充說明】${extra}，請優先依此說明修正辨識結果。` : ''}
 評分與指標定義：
 - confidence：辨識信心 0–100（照片清晰且特徵明顯給高分，反之給低分）。
 - glucoseScore：血糖衝擊 0–100（精緻澱粉多、含糖量高、纖維少則給高分）。
@@ -784,9 +789,10 @@ async function analyzeImage() {
   document.getElementById('loadingText').textContent = 'Gemini 正在辨識食物…';
   hideError();
   try {
+    const extraHint = document.getElementById('extraHint')?.value?.trim() || '';
     const raw = await callGemini([
       { inline_data: { mime_type: currentMediaType, data: currentImageB64 } },
-      { text: FOOD_PROMPT }
+      { text: FOOD_PROMPT(extraHint) }
     ]);
     const parsed = parseJSON(raw);
     if (!parsed) throw new Error('無法解析 AI 回應');

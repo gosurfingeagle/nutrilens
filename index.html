@@ -177,6 +177,31 @@
   .clear-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
 
   .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 2.4; }
+
+  /* 血糖影響 */
+  .glucose-bar { margin: 0 20px 14px; }
+  .glucose-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .glucose-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .glucose-tag { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
+  .glucose-low  { background: rgba(127,255,110,0.15); color: var(--accent); }
+  .glucose-med  { background: rgba(255,184,110,0.15); color: var(--accent3); }
+  .glucose-high { background: rgba(255,110,110,0.15); color: var(--danger); }
+  .glucose-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .glucose-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .glucose-note { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+  /* BMR 計算器 */
+  .bmr-result { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 12px; padding: 14px 16px; margin-top: 14px; display: none; }
+  .bmr-result-title { font-size: 12px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+  .bmr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .bmr-item { background: var(--bg); border-radius: 10px; padding: 10px 12px; text-align: center; }
+  .bmr-val { font-family: Syne, sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 2px; }
+  .bmr-lbl { font-size: 11px; color: var(--muted); }
+  .bmr-note { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
+  .activity-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .act-btn { padding: 7px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: DM Sans, sans-serif; transition: all 0.15s; }
+  .act-btn.active { background: var(--accent); color: #0a0a0f; border-color: var(--accent); font-weight: 700; }
+  .apply-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 11px; font-family: Syne, sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; }
   .quick-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
   .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
   .quick-chip { background: rgba(255,184,110,0.1); border: 1px solid rgba(255,184,110,0.25); color: var(--accent3); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
@@ -354,16 +379,77 @@
     </div>
 
     <div class="settings-section">
-      <div class="settings-title">🎯 每日目標</div>
-      <div class="settings-row">
-        <div class="settings-label">熱量目標（kcal）</div>
-        <input class="input-field" type="number" id="goalCal" placeholder="2000">
+      <div class="settings-title">🧮 身體數據與每日目標</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <div class="settings-label">性別</div>
+          <select class="input-field" id="bodyGender" style="padding:10px 8px">
+            <option value="male">男性</option>
+            <option value="female">女性</option>
+          </select>
+        </div>
+        <div style="flex:1">
+          <div class="settings-label">年齡</div>
+          <input class="input-field" type="number" id="bodyAge" placeholder="30" min="10" max="100">
+        </div>
       </div>
-      <div class="settings-row">
-        <div class="settings-label">蛋白質目標（g）</div>
-        <input class="input-field" type="number" id="goalProt" placeholder="130">
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1">
+          <div class="settings-label">身高（cm）</div>
+          <input class="input-field" type="number" id="bodyHeight" placeholder="170" min="100" max="250">
+        </div>
+        <div style="flex:1">
+          <div class="settings-label">體重（kg）</div>
+          <input class="input-field" type="number" id="bodyWeight" placeholder="70" min="30" max="200">
+        </div>
       </div>
-      <button class="save-btn" onclick="saveGoals()">儲存目標</button>
+
+      <div class="settings-label" style="margin-bottom:6px">活動程度</div>
+      <div class="activity-row">
+        <button class="act-btn active" id="act-1" onclick="setActivity(1.2,'act-1')">久坐</button>
+        <button class="act-btn" id="act-2" onclick="setActivity(1.375,'act-2')">輕度運動</button>
+        <button class="act-btn" id="act-3" onclick="setActivity(1.55,'act-3')">中度運動</button>
+        <button class="act-btn" id="act-4" onclick="setActivity(1.725,'act-4')">高強度</button>
+      </div>
+
+      <button class="save-btn" onclick="calcBMR()">🧮 計算每日所需</button>
+
+      <div class="bmr-result" id="bmrResult">
+        <div class="bmr-result-title">計算結果</div>
+        <div class="bmr-grid">
+          <div class="bmr-item">
+            <div class="bmr-val" id="bmrBMI" style="color:var(--accent2)">—</div>
+            <div class="bmr-lbl">BMI</div>
+          </div>
+          <div class="bmr-item">
+            <div class="bmr-val" id="bmrBMR" style="color:var(--muted)">—</div>
+            <div class="bmr-lbl">基礎代謝（kcal）</div>
+          </div>
+          <div class="bmr-item">
+            <div class="bmr-val" id="bmrTDEE" style="color:var(--accent)">—</div>
+            <div class="bmr-lbl">每日消耗（kcal）</div>
+          </div>
+          <div class="bmr-item">
+            <div class="bmr-val" id="bmrProt" style="color:var(--accent2)">—</div>
+            <div class="bmr-lbl">建議蛋白質（g）</div>
+          </div>
+        </div>
+        <div class="bmr-note" id="bmrNote"></div>
+        <button class="apply-btn" onclick="applyBMR()">套用為每日目標 →</button>
+      </div>
+
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="settings-title" style="font-size:14px;margin-bottom:10px">手動設定目標</div>
+        <div class="settings-row">
+          <div class="settings-label">每日熱量目標（kcal）</div>
+          <input class="input-field" type="number" id="goalCal" placeholder="2000">
+        </div>
+        <div class="settings-row">
+          <div class="settings-label">每日蛋白質目標（g）</div>
+          <input class="input-field" type="number" id="goalProt" placeholder="130">
+        </div>
+        <button class="save-btn" onclick="saveGoals()">儲存目標</button>
+      </div>
     </div>
 
     <div class="settings-section">
@@ -380,7 +466,7 @@
 // ═══════════════════════════════════════════════
 // 狀態與工具
 // ═══════════════════════════════════════════════
-let settings = { goalCal: 2000, goalProt: 130 };
+let settings = { goalCal: 2000, goalProt: 130, gender: 'male', age: 30, height: 0, weight: 0, activity: 1.2 };
 let currentImageB64 = null;
 let currentMediaType = 'image/jpeg';
 let histView = 'day';
@@ -433,9 +519,74 @@ function saveGoals() {
   settings.goalCal = c; settings.goalProt = p;
   persistSettings();
   updateProgress();
-  document.getElementById('calGoalLabel').textContent = `/ ${c} kcal`;
-  document.getElementById('protGoalLabel').textContent = `/ ${p} g`;
   alert('✅ 目標已儲存');
+}
+
+let _activityFactor = 1.2;
+function setActivity(factor, btnId) {
+  _activityFactor = factor;
+  settings.activity = factor;
+  document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(btnId).classList.add('active');
+}
+
+function calcBMR() {
+  const gender = document.getElementById('bodyGender').value;
+  const age    = parseFloat(document.getElementById('bodyAge').value);
+  const height = parseFloat(document.getElementById('bodyHeight').value);
+  const weight = parseFloat(document.getElementById('bodyWeight').value);
+
+  if (!age || !height || !weight) { alert('請填寫年齡、身高、體重'); return; }
+
+  // 儲存身體數據
+  settings.gender = gender; settings.age = age;
+  settings.height = height; settings.weight = weight;
+  persistSettings();
+
+  // Mifflin-St Jeor 公式
+  let bmr;
+  if (gender === 'male') {
+    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+  } else {
+    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+  }
+  const tdee = Math.round(bmr * _activityFactor);
+  const bmi  = (weight / ((height / 100) ** 2)).toFixed(1);
+
+  // 建議蛋白質（體重 × 1.6g，有健身則 × 2.0g）
+  const protMin = Math.round(weight * 1.6);
+  const protMax = Math.round(weight * 2.0);
+
+  // BMI 評估
+  let bmiLabel, bmiColor;
+  if (bmi < 18.5)      { bmiLabel = '體重過輕'; bmiColor = 'var(--accent2)'; }
+  else if (bmi < 24)   { bmiLabel = '正常範圍'; bmiColor = 'var(--accent)'; }
+  else if (bmi < 27)   { bmiLabel = '輕度過重'; bmiColor = 'var(--accent3)'; }
+  else                 { bmiLabel = '肥胖'; bmiColor = 'var(--danger)'; }
+
+  document.getElementById('bmrBMI').textContent  = `${bmi}`;
+  document.getElementById('bmrBMI').style.color  = bmiColor;
+  document.getElementById('bmrBMR').textContent  = Math.round(bmr);
+  document.getElementById('bmrTDEE').textContent = tdee;
+  document.getElementById('bmrProt').textContent = `${protMin}–${protMax}`;
+  document.getElementById('bmrNote').textContent =
+    `BMI ${bmi}（${bmiLabel}）。每日消耗約 ${tdee} kcal，建議蛋白質 ${protMin}–${protMax}g。若想減重，熱量目標可設為 ${tdee - 300}–${tdee - 500} kcal。`;
+
+  // 存到暫存供 applyBMR 使用
+  window._bmrData = { tdee, protMid: Math.round((protMin + protMax) / 2) };
+  document.getElementById('bmrResult').style.display = 'block';
+}
+
+function applyBMR() {
+  if (!window._bmrData) return;
+  const { tdee, protMid } = window._bmrData;
+  settings.goalCal  = tdee;
+  settings.goalProt = protMid;
+  persistSettings();
+  updateProgress();
+  document.getElementById('goalCal').value  = tdee;
+  document.getElementById('goalProt').value = protMid;
+  alert(`✅ 已套用！每日熱量目標：${tdee} kcal，蛋白質目標：${protMid}g`);
 }
 
 // ═══════════════════════════════════════════════
@@ -481,6 +632,16 @@ function initSettings() {
   setApiStatus(key ? '✅ API Key 已設定' : '尚未設定 API Key', !!key);
   document.getElementById('goalCal').value = settings.goalCal;
   document.getElementById('goalProt').value = settings.goalProt;
+  if (settings.gender) document.getElementById('bodyGender').value = settings.gender;
+  if (settings.age)    document.getElementById('bodyAge').value    = settings.age;
+  if (settings.height) document.getElementById('bodyHeight').value = settings.height;
+  if (settings.weight) document.getElementById('bodyWeight').value = settings.weight;
+  // 恢復活動程度按鈕
+  const actMap = {1.2:'act-1',1.375:'act-2',1.55:'act-3',1.725:'act-4'};
+  document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
+  const actId = actMap[settings.activity] || 'act-1';
+  const actEl = document.getElementById(actId);
+  if (actEl) actEl.classList.add('active');
 }
 
 function toggleSection(name) {
@@ -568,7 +729,7 @@ async function callGemini(parts) {
 }
 
 // 與可用版本一模一樣的 prompt + 解析
-const FOOD_PROMPT = `你是台灣專業營養師，請仔細分析這張食物照片。
+const FOOD_PROMPT = `你是擁有20年經驗的台灣專業營養師，同時具備糖尿病衛教師資格，專精於飲食熱量分析、血糖控制與體重管理。請以你的專業仔細分析這張食物照片。
 
 分析規則：
 1. 【食物辨識】辨識照片中每一樣食材，包括配菜、醬料、配料
@@ -576,20 +737,22 @@ const FOOD_PROMPT = `你是台灣專業營養師，請仔細分析這張食物�
 3. 【台灣食物標準】以台灣常見食物的熱量資料庫為基準（例如：台灣便當、小吃、家常菜）
 4. 【烹調影響】考慮烹調方式對熱量的影響（清蒸/水煮熱量最低，炸物熱量最高）
 5. 【信心程度】評估你對這次辨識的信心（0-100），若照片模糊或食物遮擋請給低分
+6. 【血糖影響】評估這餐對血糖的整體影響：glucoseScore 為 0-100 分（分數越高衝擊越大），glucoseLevel 為 "low"/"medium"/"high"，glucoseNote 為一句說明原因（含GI值概念、碳水比例、纖維量等）
 
 請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
-{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"confidence":數字,"foods":[{"name":"食物名稱","amount":"估算份量例如200g或1碗","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
+{"mealName":"餐點名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low/medium/high","glucoseNote":"血糖影響說明（30字內）","foods":[{"name":"食物名稱","amount":"估算份量例如200g或1碗","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
 
 const MANUAL_PROMPT = (food, prot) =>
-  `你是台灣專業營養師，請估算以下食物的熱量與蛋白質：「${food}」${prot ? `（蛋白質已知為 ${prot}g）` : ''}
+  `你是擁有20年經驗的台灣專業營養師，同時具備糖尿病衛教師資格，專精於飲食熱量分析、血糖控制與體重管理。請估算以下食物的熱量與蛋白質：「${food}」${prot ? `（蛋白質已知為 ${prot}g）` : ''}
 
 分析規則：
 1. 以台灣常見食物的熱量資料庫為基準
 2. 依照指定的份量（ml 或 g）精確計算，不要用預設份量
 3. confidence 為估算信心分數（0-100），食物名稱越明確分數越高
+4. glucoseScore 為血糖衝擊分數（0-100），glucoseLevel 為 "low"/"medium"/"high"，glucoseNote 為說明
 
 請只回傳以下 JSON 格式，不要加任何其他文字或 markdown 符號：
-{"mealName":"食物名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"confidence":數字,"foods":[{"name":"食物名稱","amount":"份量","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
+{"mealName":"食物名稱（繁體中文）","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low/medium/high","glucoseNote":"血糖影響說明（30字內）","foods":[{"name":"食物名稱","amount":"份量","calories":數字,"protein":數字}],"note":"一句25字內的繁體中文營養建議"}`;
 
 function parseJSON(raw) {
   if (!raw) return null;
@@ -745,6 +908,9 @@ function makeEntry(type, image, parsed) {
     calories: Number(parsed.totalCalories) || 0,
     protein:  Number(parsed.totalProtein)  || 0,
     confidence: parsed.confidence !== undefined ? Number(parsed.confidence) : undefined,
+    glucoseScore: parsed.glucoseScore !== undefined ? Number(parsed.glucoseScore) : undefined,
+    glucoseLevel: parsed.glucoseLevel || undefined,
+    glucoseNote:  parsed.glucoseNote  || undefined,
     foods: Array.isArray(parsed.foods) ? parsed.foods : [],
     note: parsed.note || '',
     time: fmtTime()
@@ -790,6 +956,27 @@ function renderResult(entry) {
       </div>`;
   }
 
+  // 血糖影響區塊
+  let glucoseHtml = '';
+  if (entry.glucoseScore !== undefined) {
+    const gs = entry.glucoseScore;
+    const gl = entry.glucoseLevel || (gs >= 70 ? 'high' : gs >= 40 ? 'medium' : 'low');
+    const gColor = gl === 'high' ? 'var(--danger)' : gl === 'medium' ? 'var(--accent3)' : 'var(--accent)';
+    const gLabel = gl === 'high' ? '血糖衝擊高' : gl === 'medium' ? '血糖衝擊中' : '血糖衝擊低';
+    const gClass = gl === 'high' ? 'glucose-high' : gl === 'medium' ? 'glucose-med' : 'glucose-low';
+    glucoseHtml = `
+      <div class="glucose-bar">
+        <div class="glucose-label-row">
+          <span class="glucose-title">🩸 血糖影響</span>
+          <span class="glucose-tag ${gClass}">${gLabel}</span>
+        </div>
+        <div class="glucose-track">
+          <div class="glucose-fill" style="width:${gs}%;background:${gColor}"></div>
+        </div>
+        ${entry.glucoseNote ? `<div class="glucose-note">${entry.glucoseNote}</div>` : ''}
+      </div>`;
+  }
+
   document.getElementById('resultCard').innerHTML = `
     <div class="result-header${isManual ? ' manual' : ''}">
       <span>${isManual ? '✏️' : '✦'}</span>
@@ -802,6 +989,7 @@ function renderResult(entry) {
       <div class="macro-item"><div class="macro-val" style="color:#c8c8e8;font-size:20px">${entry.foods.length}</div><div class="macro-label">食材</div></div>
     </div>
     ${confHtml}
+    ${glucoseHtml}
     <div class="food-list"><div class="food-list-title">食材明細（含估算份量）</div>${foods || '<div style="color:var(--muted);font-size:13px">無明細</div>'}</div>
     ${entry.note ? `<div class="result-note">💡 ${entry.note}</div>` : ''}
   `;
@@ -987,8 +1175,10 @@ function jumpDay(k) {
 // 匯出 / 清除
 // ═══════════════════════════════════════════════
 function showExportModal() {
-  const data = JSON.stringify(allRecords(), null, 2);
   const records = allRecords();
+  const foodHistory = getFoodHistory();
+  const exportObj = { records, foodHistory };
+  const data = JSON.stringify(exportObj, null, 2);
   const days = Object.keys(records).length;
   const total = Object.values(records).reduce((a, r) => a + r.length, 0);
 
@@ -1109,21 +1299,36 @@ function confirmImport() {
     return;
   }
 
-  // 驗證格式：必須是物件，key 是日期格式
+  // 驗證格式：必須是物件
   if (typeof imported !== 'object' || Array.isArray(imported)) {
     alert('❌ 資料格式不正確');
     return;
+  }
+
+  // 支援新格式 { records, foodHistory } 和舊格式（直接是 records）
+  let importedRecords, importedFoodHistory;
+  if (imported.records && typeof imported.records === 'object') {
+    // 新格式
+    importedRecords = imported.records;
+    importedFoodHistory = imported.foodHistory || [];
+  } else {
+    // 舊格式（只有 records）
+    importedRecords = imported;
+    importedFoodHistory = [];
   }
 
   const mode = document.querySelector('input[name="importMode"]:checked').value;
   let days = 0, records = 0;
 
   if (mode === 'replace') {
-    saveRecords(imported);
+    saveRecords(importedRecords);
+    if (importedFoodHistory.length) {
+      localStorage.setItem('nl_food_history', JSON.stringify(importedFoodHistory));
+    }
   } else {
-    // 合併：同一天的資料合併，避免重複 id
+    // 合併飲食紀錄
     const existing = allRecords();
-    for (const [date, entries] of Object.entries(imported)) {
+    for (const [date, entries] of Object.entries(importedRecords)) {
       if (!existing[date]) {
         existing[date] = entries;
       } else {
@@ -1133,10 +1338,21 @@ function confirmImport() {
       }
     }
     saveRecords(existing);
+
+    // 合併食物歷史（避免重複）
+    if (importedFoodHistory.length) {
+      const existingHist = getFoodHistory();
+      const merged = [...existingHist];
+      for (const item of importedFoodHistory) {
+        const dup = merged.find(h => h.food === item.food && h.unit === item.unit);
+        if (!dup) merged.push(item);
+      }
+      localStorage.setItem('nl_food_history', JSON.stringify(merged.slice(0, 20)));
+    }
   }
 
   // 統計匯入筆數
-  for (const entries of Object.values(imported)) {
+  for (const entries of Object.values(importedRecords)) {
     days++;
     records += entries.length;
   }

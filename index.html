@@ -797,16 +797,21 @@ const MANUAL_PROMPT = (food, prot, hint) => {
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
+// 這裡是你要求修改的地方：加入 alert 強制彈出錯誤視窗
 function parseJSON(raw) {
   if (!raw) return null;
   
-  // 1. 強制清掉 AI 假會加上的 markdown 標籤 (```json)
+  // 1. 強制清掉 AI 假會加上的標籤
   let s = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
 
-  // 2. 鎖定括號範圍，精準抓取資料
+  // 2. 鎖定括號範圍
   const start = s.indexOf('{');
   const end = s.lastIndexOf('}');
-  if (start === -1 || end === -1 || end <= start) return null;
+  
+  if (start === -1 || end === -1 || end <= start) {
+    alert("【偵錯雷達A】找不到大括號！\nAI 實際上說：\n" + raw.slice(0, 200));
+    return null;
+  }
 
   let jsonStr = s.slice(start, end + 1);
 
@@ -814,10 +819,11 @@ function parseJSON(raw) {
     return JSON.parse(jsonStr);
   } catch (e) {
     try {
-      // 3. 自動修復：把結尾多餘的逗號擦掉再讀一次
+      // 3. 自動修復常見的多餘逗號問題
       return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
     } catch (e2) {
-      console.error('資料修復失敗:', jsonStr);
+      // 4. 如果還是失敗，直接把 AI 寫錯的地方彈出來給我們看！
+      alert("【偵錯雷達B】資料格式破壞！\n原因：" + e2.message + "\n\nAI 給的原始資料：\n" + jsonStr.slice(0, 300));
       return null;
     }
   }

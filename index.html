@@ -739,55 +739,47 @@ const MODELS = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite-preview', 'gemi
 
 async function callGemini(parts) {
   const keys = getAllApiKeys();
-  if (!keys.length) throw new Error('請先在「設定」頁面輸入 Gemini API Key');
-
-  let lastErr = '';
-  let quotaExhaustedKeys = 0;
+  if (!keys.length) throw new Error('請先在設定頁面輸入 Gemini API Key');
 
   for (const apiKey of keys) {
     for (const model of MODELS) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       try {
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey;
         const resp = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts }],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+            contents: [{ parts: parts }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 1500 }
           })
         });
-        if (resp.ok) {
-          const data = await resp.json();
-          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-          if (!data.candidates?.length || !rawText) {
-            lastErr = '模型回應空白（model=' + model + '）';
-            continue;
-          }
-          return rawText;
+
+        const data = await resp.json();
+
+        // API 錯誤
+        if (!resp.ok) {
+          const code = data?.error?.status || '';
+          const msg  = data?.error?.message || ('HTTP ' + resp.status);
+          if (code === 'RESOURCE_EXHAUSTED' || resp.status === 429) break; // 換下一個 key
+          continue; // 換下一個 model
         }
-        // 請求失敗，讀取錯誤詳情
-        let ed = {};
-        try { ed = await resp.json(); } catch(e) {}
-        lastErr = (ed.error?.message || 'HTTP ' + resp.status) + '（model=' + model + '）';
-        if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED') || resp.status === 429) {
-          quotaExhaustedKeys++;
-          break;
-        }
-        if (resp.status === 400) {
-          // 400 通常是模型名稱錯誤，直接換下一個模型
-          continue;
-        }
+
+        // 安全過濾或空回應
+        const candidate = data?.candidates?.[0];
+        if (!candidate) continue;
+        if (candidate.finishReason === 'SAFETY') throw new Error('內容被安全過濾，請換一張照片');
+
+        const text = candidate?.content?.parts?.[0]?.text || '';
+        if (text) return text;
+
       } catch(e) {
-        lastErr = e.message;
+        if (e.message.includes('安全過濾')) throw e;
+        // 網路錯誤繼續嘗試
+        continue;
       }
     }
   }
-
-  // 所有 Key 都額度用完
-  if (quotaExhaustedKeys >= keys.length) {
-    throw new Error('quota');
-  }
-  throw new Error(lastErr || '無法連接 Gemini API');
+  throw new Error('所有模型均無法回應，請確認網路與 API Key');
 }
 
 // Prompt 定義
@@ -817,20 +809,30 @@ const MANUAL_PROMPT = (food, prot, hint) => {
 };
 
 function parseJSON(raw) {
-  if (!raw) return null;
-  // 去除 markdown、多餘空白
-  let s = raw.replace(/```json/gi,'').replace(/```/g,'').trim();
-  // 直接解析
-  try { return JSON.parse(s); } catch(e) {}
-  // 擷取第一個 { 到最後一個 } 的範圍
-  const a = s.indexOf('{'), b = s.lastIndexOf('}');
-  if (a !== -1 && b !== -1 && b > a) {
-    const slice = s.slice(a, b + 1);
-    try { return JSON.parse(slice); } catch(e) {}
-    // 嘗試修復常見問題：尾部多餘逗號
-    try { return JSON.parse(slice.replace(/,\s*}/g,'}').replace(/,\s*]/g,']')); } catch(e) {}
+  if (!raw || typeof raw !== 'string') return null;
+
+  // 步驟1: 清理常見包裝
+  let s = raw
+    .replace(/^```json\s*/i, '')
+    .replace(/^```\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  // 步驟2: 直接解析
+  try { return JSON.parse(s); } catch(e1) {}
+
+  // 步驟3: 找出 { ... } 範圍
+  const start = s.indexOf('{');
+  const end   = s.lastIndexOf('}');
+  if (start !== -1 && end > start) {
+    const slice = s.slice(start, end + 1);
+    try { return JSON.parse(slice); } catch(e2) {}
+    // 步驟4: 修復尾部逗號
+    try {
+      const fixed = slice.replace(/,(\s*[}\]])/g, '$1');
+      return JSON.parse(fixed);
+    } catch(e3) {}
   }
-  console.error('parseJSON failed, raw response:', raw.slice(0, 500));
   return null;
 }
 
@@ -943,9 +945,7 @@ async function submitManual() {
     const manualHint = document.getElementById('manualHint')?.value?.trim() || '';
     const raw = await callGemini([{ text: MANUAL_PROMPT(fullName, isNaN(prot) ? null : prot, manualHint) }]);
     const parsed = parseJSON(raw);
-    if (!parsed) {
-      throw new Error('無法解析 AI 回應｜原始：' + (raw || '空').slice(0, 200));
-    }
+    if (!parsed) throw new Error('解析失敗，AI 回傳：' + (raw ? raw.slice(0, 300) : '（空）'));
     const entry = makeEntry('manual', null, parsed);
     entry.mealName = fullName;
     if (!isNaN(cal))  entry.calories = cal;

@@ -732,17 +732,33 @@ async function callGemini(parts) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts }],
-            // 強制輸出 JSON 且拉高字數上限防斷尾
-            generationConfig: { temperature: 0.1, maxOutputTokens: 8192, responseMimeType: "application/json" }
+            // 1. 維持高字數限制
+            generationConfig: { temperature: 0.1, maxOutputTokens: 8192, responseMimeType: "application/json" },
+            // 2. 這裡是你要求修改的地方：把 AI 的安全敏感度全部關閉，防止它誤判食物而強制閉嘴
+            safetySettings: [
+              { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+              { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+            ]
           })
         });
+        
         if (resp.ok) {
           const data = await resp.json();
-          if (!data.candidates?.length) throw new Error('未收到 AI 回應');
+          const candidate = data.candidates?.[0];
+          if (!candidate) throw new Error('未收到 AI 回應');
+          
+          // 3. 攔截機制：如果 AI 又被莫名其妙切斷，馬上印出真正的中斷代碼
+          if (candidate.finishReason !== 'STOP') {
+             throw new Error('被強制中斷，原因代碼：' + candidate.finishReason);
+          }
+
           const keyIndex = keys.indexOf(apiKey) + 1;
           if (keyIndex === 2) console.log('✅ 使用備用 Key 分析成功');
-          return data.candidates[0]?.content?.parts?.[0]?.text || '';
+          return candidate.content?.parts?.[0]?.text || '';
         }
+        
         const ed = await resp.json().catch(() => ({}));
         lastErr = ed.error?.message || `HTTP ${resp.status}`;
         if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED')) {

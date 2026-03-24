@@ -377,9 +377,15 @@
           <li>複製 Key（以 AIzaSy 開頭）貼到下方</li>
         </ol>
       </div>
+
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">主要 Key（優先使用）</div>
       <input class="input-field" type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
-      <div class="btn-row">
-        <button class="save-btn" onclick="saveApiKey()">儲存 Key</button>
+
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;margin-top:4px">備用 Key（主要額度用完自動切換）</div>
+      <input class="input-field" type="password" id="apiKeyInput2" placeholder="AIzaSy...（選填）" autocomplete="off">
+
+      <div class="btn-row" style="margin-top:8px">
+        <button class="save-btn" onclick="saveApiKey()">儲存</button>
         <button class="clear-btn" onclick="clearApiKey()">清除</button>
       </div>
       <div class="api-status" id="apiStatus"></div>
@@ -502,16 +508,34 @@ function persistSettings() {
   localStorage.setItem('nl_settings', JSON.stringify(settings));
 }
 function getApiKey() { return localStorage.getItem('nl_gemini_key') || ''; }
+function getApiKey2() { return localStorage.getItem('nl_gemini_key2') || ''; }
+function getAllApiKeys() {
+  const keys = [];
+  const k1 = getApiKey();
+  const k2 = getApiKey2();
+  if (k1) keys.push(k1);
+  if (k2) keys.push(k2);
+  return keys;
+}
 
 function saveApiKey() {
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if (!key || key.length < 10) { setApiStatus('請輸入正確的 API Key', false); return; }
-  localStorage.setItem('nl_gemini_key', key);
-  setApiStatus('✅ API Key 已儲存', true);
+  const key1 = document.getElementById('apiKeyInput').value.trim();
+  const key2 = document.getElementById('apiKeyInput2').value.trim();
+  if (!key1 || key1.length < 10) { setApiStatus('請輸入正確的主要 API Key', false); return; }
+  localStorage.setItem('nl_gemini_key', key1);
+  if (key2 && key2.length > 10) {
+    localStorage.setItem('nl_gemini_key2', key2);
+    setApiStatus('✅ 主要 Key + 備用 Key 已儲存', true);
+  } else {
+    localStorage.removeItem('nl_gemini_key2');
+    setApiStatus('✅ 主要 Key 已儲存（無備用 Key）', true);
+  }
 }
 function clearApiKey() {
   localStorage.removeItem('nl_gemini_key');
+  localStorage.removeItem('nl_gemini_key2');
   document.getElementById('apiKeyInput').value = '';
+  document.getElementById('apiKeyInput2').value = '';
   setApiStatus('已清除', false);
 }
 function setApiStatus(msg, ok) {
@@ -634,9 +658,13 @@ function switchTab(name) {
 }
 
 function initSettings() {
-  const key = getApiKey();
-  document.getElementById('apiKeyInput').value = key ? '••••••••••••••••' : '';
-  setApiStatus(key ? '✅ API Key 已設定' : '尚未設定 API Key', !!key);
+  const key1 = getApiKey();
+  const key2 = getApiKey2();
+  document.getElementById('apiKeyInput').value  = key1 ? '••••••••••••••••' : '';
+  document.getElementById('apiKeyInput2').value = key2 ? '••••••••••••••••' : '';
+  const statusMsg = key1 && key2 ? '✅ 主要 Key + 備用 Key 均已設定' :
+                    key1 ? '✅ 主要 Key 已設定（可加入備用 Key）' : '尚未設定 API Key';
+  setApiStatus(statusMsg, !!key1);
   document.getElementById('goalCal').value = settings.goalCal;
   document.getElementById('goalProt').value = settings.goalProt;
   if (settings.gender) document.getElementById('bodyGender').value = settings.gender;
@@ -707,30 +735,48 @@ function clearImage() {
 const MODELS = ['gemini-3-flash', 'gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'];
 
 async function callGemini(parts) {
-  const apiKey = getApiKey();
-  if (!apiKey) throw new Error('請先在「設定」頁面輸入 Gemini API Key');
+  const keys = getAllApiKeys();
+  if (!keys.length) throw new Error('請先在「設定」頁面輸入 Gemini API Key');
+
   let lastErr = '';
-  for (const model of MODELS) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-    try {
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
-        })
-      });
-      if (resp.ok) {
-        const data = await resp.json();
-        if (!data.candidates?.length) throw new Error('未收到 AI 回應');
-        return data.candidates[0]?.content?.parts?.[0]?.text || '';
+  let quotaExhaustedKeys = 0;
+
+  for (const apiKey of keys) {
+    for (const model of MODELS) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      try {
+        const resp = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+          })
+        });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (!data.candidates?.length) throw new Error('未收到 AI 回應');
+          // 標記目前使用哪個 Key（1 或 2）
+          const keyIndex = keys.indexOf(apiKey) + 1;
+          if (keyIndex === 2) console.log('✅ 使用備用 Key 分析成功');
+          return data.candidates[0]?.content?.parts?.[0]?.text || '';
+        }
+        const ed = await resp.json().catch(() => ({}));
+        lastErr = ed.error?.message || `HTTP ${resp.status}`;
+        // 額度用完 → 跳到下一個 Key
+        if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED')) {
+          quotaExhaustedKeys++;
+          break; // 跳出 model 迴圈，換下一個 Key
+        }
+      } catch(e) {
+        lastErr = e.message;
       }
-      const ed = await resp.json().catch(() => ({}));
-      lastErr = ed.error?.message || `HTTP ${resp.status}`;
-    } catch(e) {
-      lastErr = e.message;
     }
+  }
+
+  // 所有 Key 都額度用完
+  if (quotaExhaustedKeys >= keys.length) {
+    throw new Error('quota');
   }
   throw new Error(lastErr || '無法連接 Gemini API');
 }

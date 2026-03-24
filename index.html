@@ -802,6 +802,26 @@ const MANUAL_PROMPT = (food, prot, hint) => {
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
+function parseJSON(raw) {
+  if (!raw) return null;
+  let s = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+  const start = s.indexOf('{');
+  const end = s.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
+  
+  let jsonStr = s.slice(start, end + 1);
+  try {
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    try {
+      return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
+    } catch (e2) {
+      console.error('資料修復失敗:', jsonStr);
+      return null;
+    }
+  }
+}
+
 // ═══════════════════════════════════════════════
 // 拍照分析
 // ═══════════════════════════════════════════════

@@ -758,18 +758,24 @@ async function callGemini(parts) {
         });
         if (resp.ok) {
           const data = await resp.json();
-          if (!data.candidates?.length) throw new Error('未收到 AI 回應');
-          // 標記目前使用哪個 Key（1 或 2）
-          const keyIndex = keys.indexOf(apiKey) + 1;
-          if (keyIndex === 2) console.log('✅ 使用備用 Key 分析成功');
-          return data.candidates[0]?.content?.parts?.[0]?.text || '';
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          if (!data.candidates?.length || !rawText) {
+            lastErr = '模型回應空白（model=' + model + '）';
+            continue;
+          }
+          return rawText;
         }
-        const ed = await resp.json().catch(() => ({}));
-        lastErr = ed.error?.message || `HTTP ${resp.status}`;
-        // 額度用完 → 跳到下一個 Key
-        if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED')) {
+        // 請求失敗，讀取錯誤詳情
+        let ed = {};
+        try { ed = await resp.json(); } catch(e) {}
+        lastErr = (ed.error?.message || 'HTTP ' + resp.status) + '（model=' + model + '）';
+        if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED') || resp.status === 429) {
           quotaExhaustedKeys++;
-          break; // 跳出 model 迴圈，換下一個 Key
+          break;
+        }
+        if (resp.status === 400) {
+          // 400 通常是模型名稱錯誤，直接換下一個模型
+          continue;
         }
       } catch(e) {
         lastErr = e.message;
@@ -1455,15 +1461,15 @@ function clearAllData() {
 // ═══════════════════════════════════════════════
 function friendlyErr(msg) {
   if (!msg) return '分析失敗，請重試';
-  if (msg.includes('API_KEY_INVALID') || msg.includes('API key')) return 'API Key 無效，請至設定頁面重新確認';
+  if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) return 'API Key 無效，請至設定頁面重新確認';
   if (msg.includes('PERMISSION_DENIED')) return 'API Key 權限不足';
-  if (msg === 'quota' || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
+  if (msg === 'quota' || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('429')) {
     const k2 = getApiKey2();
     return k2 ? '主要與備用 Key 今日額度均已用完，明天台灣時間下午3點後重置' : '今日免費額度已用完，可到設定頁面加入備用 Key，或明天台灣時間下午3點後重試';
   }
   if (msg.includes('fetch') || msg.includes('Network')) return '網路連線失敗，請確認網路';
-  if (msg.includes('設定')) return msg;
-  return '分析失敗：' + msg;
+  // 直接顯示完整錯誤訊息方便除錯
+  return msg;
 }
 function showError(msg) {
   const b = document.getElementById('errorBox');

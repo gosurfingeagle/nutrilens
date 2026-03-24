@@ -784,50 +784,47 @@ async function callGemini(parts) {
   throw new Error(lastErr || '無法連接 Gemini API');
 }
 
-// 與可用版本一模一樣的 prompt + 解析
-const FOOD_PROMPT = (extra) => `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析、管理與血糖控制。
-飲食分析的順序與原則：
-- 仔細觀察照片，辨識每一樣食物（主食、配菜、湯品、醬料都要列出）。如果照片中沒有食物或完全無法辨識，請將 isFood 設為 false。
-- ⚠️【台式食材警示】台灣便當常見「麵腸、麵筋、烤麩、素雞、豆包」等素料或豆類製品。它們滷製後外觀極度類似「滷大腸」或「滷肉」。請仔細觀察表面紋理：若無明顯動物脂肪、皮下組織或腸壁特徵，請優先判定為「麵腸」或豆製品，切勿誤判為高脂肉類！
-- 份量以台灣常見標準為基準估算：
-  - 主食：飯碗八分滿≈160g、一般便當盒平鋪≈200g，若只有半格≈100g，請勿高估。
-  - 蛋白質：手掌心大小的肉排約提供 20g-25g 蛋白質，一顆洗選蛋約 7g 蛋白質。
-- 評估血糖影響：依照「升糖指數」(GI值)、「總碳水化合物含量」與「膳食纖維比例」綜合檢測。
-- 考慮烹調方式估算熱量與脂肪（油炸>煎炒>勾芡>蒸煮）。${extra ? `
-- 【使用者補充說明】${extra}，請優先依此說明修正辨識結果。` : ''}
-評分與指標定義：
-- confidence：辨識信心 0–100（照片清晰且特徵明顯給高分，反之給低分）。
-- glucoseScore：血糖衝擊 0–100（精緻澱粉多、含糖量高、纖維少則給高分）。
-- glucoseLevel："low"（<40）/ "medium"（40–70）/ "high"（>70）。
-- glucoseNote：30字內說明血糖影響原因。
-【強制輸出格式】
-絕對不要輸出任何解釋文字，也絕對不要使用 \`\`\`json 或 \`\`\` 等 markdown 標記。你的回覆必須直接以 { 開頭，並以 } 結尾的純 JSON 格式回傳：
-{"isFood":true,"mealName":"繁體中文餐點名稱","totalCalories":數字,"totalCarbs":數字,"totalProtein":數字,"totalFat":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low或medium或high","glucoseNote":"說明","foods":[{"name":"食物名稱","amount":"份量如160g或1碗","calories":數字,"carbs":數字,"protein":數字,"fat":數字}],"note":"25字內具體的台灣飲食改善建議"}`;
+// Prompt 定義
+const JSON_SCHEMA = '{"isFood":true,"mealName":"餐點名稱","totalCalories":650,"totalCarbs":85,"totalProtein":25,"totalFat":18,"confidence":90,"glucoseScore":72,"glucoseLevel":"high","glucoseNote":"白飯GI值高血糖衝擊大","foods":[{"name":"白飯","amount":"200g","calories":260,"carbs":57,"protein":5,"fat":0}],"note":"建議減少白飯份量增加蔬菜"}';
 
-const MANUAL_PROMPT = (food, prot, hint) =>
-  `你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。
+const FOOD_PROMPT = (extra) => {
+  const extraLine = extra ? '使用者補充說明：' + extra + '（請優先依此修正辨識）。' : '';
+  return '你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。' +
+    '請分析這張食物照片。' + extraLine +
+    '分析要點：' +
+    '1.辨識所有食物包含主食配菜湯品醬料，照片中沒有食物則isFood設false。' +
+    '2.台式素食警示：麵腸麵筋烤麩素雞滷製後類似大腸滷肉，請依表面紋理判斷，無動物脂肪特徵優先判為豆製品。' +
+    '3.份量：飯碗八分滿約160g，便當飯約200g，半格約100g，勿高估。' +
+    '4.血糖：依GI值、碳水量、纖維比例評估。glucoseScore 0到100，high大於70，medium 40到70，low小於40。' +
+    '5.烹調熱量：油炸最高、煎炒次之、蒸煮最低。' +
+    '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
+};
 
-請估算「${food}」的營養數據${prot ? `（蛋白質已知：${prot}g，熱量請自行估算）` : ''}${hint ? `
-- 【使用者補充說明】${hint}，請優先依此說明修正分析結果。` : ''}：
-- 以台灣食物資料庫為基準，依實際份量精確計算
-- confidence：估算信心 0–100（食物描述越清楚分數越高）
-- glucoseScore：血糖衝擊 0–100
-- glucoseLevel："low"（<40）/ "medium"（40–70）/ "high"（>70）
-
-只回傳 JSON，不加任何說明或 markdown：
-{"mealName":"繁體中文食物名稱","totalCalories":數字,"totalProtein":數字,"confidence":數字,"glucoseScore":數字,"glucoseLevel":"low或medium或high","glucoseNote":"說明","foods":[{"name":"食物名稱","amount":"份量","calories":數字,"protein":數字}],"note":"25字內營養建議"}`;
+const MANUAL_PROMPT = (food, prot, hint) => {
+  const protLine = prot ? '蛋白質已知' + prot + 'g。' : '';
+  const hintLine = hint ? '補充說明：' + hint + '（請優先依此修正）。' : '';
+  return '你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。' +
+    '請估算「' + food + '」的營養。' + protLine + hintLine +
+    '以台灣食物資料庫為基準依實際份量計算。' +
+    'glucoseScore 0到100，high大於70，medium 40到70，low小於40。' +
+    '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
+};
 
 function parseJSON(raw) {
   if (!raw) return null;
-  // 去除 markdown 包裹
+  // 去除 markdown、多餘空白
   let s = raw.replace(/```json/gi,'').replace(/```/g,'').trim();
   // 直接解析
   try { return JSON.parse(s); } catch(e) {}
-  // 擷取 {...} 範圍
+  // 擷取第一個 { 到最後一個 } 的範圍
   const a = s.indexOf('{'), b = s.lastIndexOf('}');
-  if (a !== -1 && b !== -1) {
-    try { return JSON.parse(s.slice(a, b+1)); } catch(e) {}
+  if (a !== -1 && b !== -1 && b > a) {
+    const slice = s.slice(a, b + 1);
+    try { return JSON.parse(slice); } catch(e) {}
+    // 嘗試修復常見問題：尾部多餘逗號
+    try { return JSON.parse(slice.replace(/,\s*}/g,'}').replace(/,\s*]/g,']')); } catch(e) {}
   }
+  console.error('parseJSON failed, raw response:', raw.slice(0, 500));
   return null;
 }
 
@@ -922,7 +919,8 @@ async function submitManual() {
     const entry = {
       id: Date.now(), type: 'manual', image: null,
       mealName: fullName, calories: cal, protein: prot,
-      foods: [{ name: fullName, calories: cal, protein: prot }],
+      carbs: 0, fat: 0,
+      foods: [{ name: fullName, calories: cal, carbs: 0, protein: prot, fat: 0 }],
       note: '', time: fmtTime()
     };
     finishEntry(entry);

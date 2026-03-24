@@ -849,7 +849,10 @@ async function analyzeImage() {
       { text: FOOD_PROMPT(extraHint) }
     ]);
     const parsed = parseJSON(raw);
-    if (!parsed) throw new Error('無法解析 AI 回應');
+    if (!parsed) {
+      // 這裡是你要求修改的地方：把 AI 真正說的話印出來，方便我們抓蟲
+      throw new Error('無法解析。AI 實際說：' + (raw || '空').slice(0, 150));
+    }
     const entry = makeEntry('ai', savedImg, parsed);
     finishEntry(entry);
     currentImageB64 = null;

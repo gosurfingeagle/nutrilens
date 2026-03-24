@@ -797,35 +797,27 @@ const MANUAL_PROMPT = (food, prot, hint) => {
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
-// 這裡是你要求修改的地方：加強對 AI 碎碎念的過濾能力
 function parseJSON(raw) {
   if (!raw) return null;
   
-  let s = raw.trim();
+  // 1. 強制清掉 AI 假會加上的 markdown 標籤 (```json)
+  let s = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
 
-  // 1. 先試著找出 JSON 的邊界 { ... }，無視前後的廢話
+  // 2. 鎖定括號範圍，精準抓取資料
   const start = s.indexOf('{');
   const end = s.lastIndexOf('}');
-
-  if (start === -1 || end === -1 || end <= start) {
-    console.error('找不到有效的數據格式');
-    return null;
-  }
+  if (start === -1 || end === -1 || end <= start) return null;
 
   let jsonStr = s.slice(start, end + 1);
 
   try {
-    // 2. 嘗試直接解析
     return JSON.parse(jsonStr);
   } catch (e) {
     try {
-      // 3. 如果失敗，修復常見的「多餘逗號」錯誤後再試一次
-      const fixedJson = jsonStr
-        .replace(/,\s*}/g, '}')
-        .replace(/,\s*]/g, ']');
-      return JSON.parse(fixedJson);
+      // 3. 自動修復：把結尾多餘的逗號擦掉再讀一次
+      return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
     } catch (e2) {
-      console.error('AI 回傳內容格式錯誤，無法讀取', raw);
+      console.error('資料修復失敗:', jsonStr);
       return null;
     }
   }
@@ -1465,9 +1457,10 @@ function friendlyErr(msg) {
   if (msg.includes('PERMISSION_DENIED')) return 'API Key 權限不足';
   if (msg === 'quota' || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
     const k2 = getApiKey2();
-    return k2 ? '主要與備用 Key 今日額度均已用完，明天台灣時間下午3點後重置' : '今日免費額度已用完，可到設定頁面加入備用 Key，或明天台灣時間下午3點後重試';
+    return k2 ? '主要與備用 Key 今日額度均已用完，明天下午3點後重置' : '今日免費額度已用完，可加入備用 Key 或明天重試';
   }
   if (msg.includes('fetch') || msg.includes('Network')) return '網路連線失敗，請確認網路';
+  if (msg.includes('無法解析')) return 'AI 回傳格式異常，請再試一次或換一張照片';
   if (msg.includes('設定')) return msg;
   return '分析失敗：' + msg;
 }

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NutriLens 食物營養分析</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('[https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap](https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap)');
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
     --bg: #0a0a0f; --card: #1a1a24; --border: #2a2a3a;
@@ -357,7 +357,7 @@
       <div class="api-steps">
         <p>免費申請步驟</p>
         <ol>
-          <li>前往 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio →</a></li>
+          <li>前往 <a href="[https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)" target="_blank">Google AI Studio →</a></li>
           <li>用 Google 帳號登入</li>
           <li>點「Create API key」</li>
           <li>複製 Key（以 AIzaSy 開頭）貼到下方</li>
@@ -471,7 +471,7 @@ let currentMediaType = 'image/jpeg';
 let histView = 'day';
 let curDay = todayKey();
 let curMonth = monthKey(new Date());
-let activeSection = null; // 'upload' | 'manual' | null
+let activeSection = null;
 
 function todayKey() {
   return new Date().toISOString().split('T')[0];
@@ -507,7 +507,6 @@ function getAllApiKeys() {
 function saveApiKey() {
   const raw1 = document.getElementById('apiKeyInput').value.trim();
   const raw2 = document.getElementById('apiKeyInput2').value.trim();
-  // 若欄位顯示的是遮罩符號，代表沒有修改，保留原本的 Key
   const key1 = raw1.includes('•') ? getApiKey()  : raw1;
   const key2 = raw2.includes('•') ? getApiKey2() : raw2;
   if (!key1 || key1.length < 10) { setApiStatus('請輸入正確的主要 API Key', false); return; }
@@ -558,12 +557,10 @@ function calcBMR() {
 
   if (!age || !height || !weight) { alert('請填寫年齡、身高、體重'); return; }
 
-  // 儲存身體數據
   settings.gender = gender; settings.age = age;
   settings.height = height; settings.weight = weight;
   persistSettings();
 
-  // Mifflin-St Jeor 公式
   let bmr;
   if (gender === 'male') {
     bmr = 10 * weight + 6.25 * height - 5 * age + 5;
@@ -573,11 +570,9 @@ function calcBMR() {
   const tdee = Math.round(bmr * _activityFactor);
   const bmi  = (weight / ((height / 100) ** 2)).toFixed(1);
 
-  // 建議蛋白質（體重 × 1.6g，有健身則 × 2.0g）
   const protMin = Math.round(weight * 1.6);
   const protMax = Math.round(weight * 2.0);
 
-  // BMI 評估
   let bmiLabel, bmiColor;
   if (bmi < 18.5)      { bmiLabel = '體重過輕'; bmiColor = 'var(--accent2)'; }
   else if (bmi < 24)   { bmiLabel = '正常範圍'; bmiColor = 'var(--accent)'; }
@@ -592,7 +587,6 @@ function calcBMR() {
   document.getElementById('bmrNote').textContent =
     `BMI ${bmi}（${bmiLabel}）。每日消耗約 ${tdee} kcal，建議蛋白質 ${protMin}–${protMax}g。若想減重，熱量目標可設為 ${tdee - 300}–${tdee - 500} kcal。`;
 
-  // 存到暫存供 applyBMR 使用
   window._bmrData = { tdee, protMid: Math.round((protMin + protMax) / 2) };
   document.getElementById('bmrResult').style.display = 'block';
 }
@@ -660,7 +654,6 @@ function initSettings() {
   if (settings.age)    document.getElementById('bodyAge').value    = settings.age;
   if (settings.height) document.getElementById('bodyHeight').value = settings.height;
   if (settings.weight) document.getElementById('bodyWeight').value = settings.weight;
-  // 恢復活動程度按鈕
   const actMap = {1.2:'act-1',1.375:'act-2',1.55:'act-3',1.725:'act-4'};
   document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
   const actId = actMap[settings.activity] || 'act-1';
@@ -719,9 +712,9 @@ function clearImage() {
 }
 
 // ═══════════════════════════════════════════════
-// Gemini API 呼叫（與可用版本完全相同的 prompt）
+// Gemini API 呼叫與設定
 // ═══════════════════════════════════════════════
-const MODELS = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'];
+const MODELS = ['gemini-2.5-flash', 'gemini-3-flash-preview'];
 
 async function callGemini(parts) {
   const keys = getAllApiKeys();
@@ -739,24 +732,22 @@ async function callGemini(parts) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts }],
-            // 這裡是你要求修改的地方：加入 responseMimeType 強制 AI 輸出純 JSON 格式，並稍微提高 token 避免資料被截斷
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: "application/json" }
+            // 強制輸出 JSON 且拉高字數上限防斷尾
+            generationConfig: { temperature: 0.1, maxOutputTokens: 8192, responseMimeType: "application/json" }
           })
         });
         if (resp.ok) {
           const data = await resp.json();
           if (!data.candidates?.length) throw new Error('未收到 AI 回應');
-          // 標記目前使用哪個 Key（1 或 2）
           const keyIndex = keys.indexOf(apiKey) + 1;
           if (keyIndex === 2) console.log('✅ 使用備用 Key 分析成功');
           return data.candidates[0]?.content?.parts?.[0]?.text || '';
         }
         const ed = await resp.json().catch(() => ({}));
         lastErr = ed.error?.message || `HTTP ${resp.status}`;
-        // 額度用完 → 跳到下一個 Key
         if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED')) {
           quotaExhaustedKeys++;
-          break; // 跳出 model 迴圈，換下一個 Key
+          break; 
         }
       } catch(e) {
         lastErr = e.message;
@@ -764,14 +755,12 @@ async function callGemini(parts) {
     }
   }
 
-  // 所有 Key 都額度用完
   if (quotaExhaustedKeys >= keys.length) {
     throw new Error('quota');
   }
   throw new Error(lastErr || '無法連接 Gemini API');
 }
 
-// Prompt 定義
 const JSON_SCHEMA = '{"isFood":true,"mealName":"餐點名稱","totalCalories":650,"totalCarbs":85,"totalProtein":25,"totalFat":18,"confidence":90,"glucoseScore":72,"glucoseLevel":"high","glucoseNote":"白飯GI值高血糖衝擊大","foods":[{"name":"白飯","amount":"200g","calories":260,"carbs":57,"protein":5,"fat":0}],"note":"建議減少白飯份量增加蔬菜"}';
 
 const FOOD_PROMPT = (extra) => {
@@ -797,33 +786,22 @@ const MANUAL_PROMPT = (food, prot, hint) => {
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
-// 這裡是你要求修改的地方：加入 alert 強制彈出錯誤視窗
+// 穩定的資料解析器（去除干擾符號並自動修復格式）
 function parseJSON(raw) {
   if (!raw) return null;
-  
-  // 1. 強制清掉 AI 假會加上的標籤
   let s = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
-
-  // 2. 鎖定括號範圍
   const start = s.indexOf('{');
   const end = s.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
   
-  if (start === -1 || end === -1 || end <= start) {
-    alert("【偵錯雷達A】找不到大括號！\nAI 實際上說：\n" + raw.slice(0, 200));
-    return null;
-  }
-
   let jsonStr = s.slice(start, end + 1);
-
   try {
     return JSON.parse(jsonStr);
   } catch (e) {
     try {
-      // 3. 自動修復常見的多餘逗號問題
       return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
     } catch (e2) {
-      // 4. 如果還是失敗，直接把 AI 寫錯的地方彈出來給我們看！
-      alert("【偵錯雷達B】資料格式破壞！\n原因：" + e2.message + "\n\nAI 給的原始資料：\n" + jsonStr.slice(0, 300));
+      console.error('資料修復失敗:', jsonStr);
       return null;
     }
   }
@@ -839,7 +817,7 @@ async function analyzeImage() {
   document.getElementById('resultCard').style.display = 'none';
   document.getElementById('loadingBox').style.display = 'block';
   const activeKeys = getAllApiKeys();
-    document.getElementById('loadingText').textContent = activeKeys.length >= 2 ? 'Gemini 正在辨識食物…（雙 Key 備援啟用）' : 'Gemini 正在辨識食物…';
+  document.getElementById('loadingText').textContent = activeKeys.length >= 2 ? 'Gemini 正在辨識食物…（雙 Key 備援啟用）' : 'Gemini 正在辨識食物…';
   hideError();
   try {
     const extraHint = document.getElementById('extraHint')?.value?.trim() || '';
@@ -848,10 +826,7 @@ async function analyzeImage() {
       { text: FOOD_PROMPT(extraHint) }
     ]);
     const parsed = parseJSON(raw);
-    if (!parsed) {
-      // 這裡是你要求修改的地方：把 AI 真正說的話印出來，方便我們抓蟲
-      throw new Error('無法解析。AI 實際說：' + (raw || '空').slice(0, 150));
-    }
+    if (!parsed) throw new Error('無法解析');
     const entry = makeEntry('ai', savedImg, parsed);
     finishEntry(entry);
     currentImageB64 = null;
@@ -865,17 +840,13 @@ async function analyzeImage() {
 // ═══════════════════════════════════════════════
 // 手動輸入
 // ═══════════════════════════════════════════════
-// ── 食物歷史（快選）─────────────────────────────────
 function getFoodHistory() {
   try { return JSON.parse(localStorage.getItem('nl_food_history') || '[]'); } catch(e) { return []; }
 }
 function saveFoodToHistory(food, qty, unit, cal, prot) {
   let hist = getFoodHistory();
-  // 移除重複
   hist = hist.filter(h => !(h.food === food && h.unit === unit));
-  // 最新的放最前面
   hist.unshift({ food, qty, unit, cal, prot });
-  // 只保留最近 20 筆
   hist = hist.slice(0, 20);
   localStorage.setItem('nl_food_history', JSON.stringify(hist));
 }
@@ -917,7 +888,6 @@ async function submitManual() {
   const cal  = parseFloat(document.getElementById('manualCal').value);
   const prot = parseFloat(document.getElementById('manualProt').value);
 
-  // 兩個都填了 → 直接新增，不需 AI
   if (!isNaN(cal) && !isNaN(prot)) {
     saveFoodToHistory(food, qty, unit, cal, prot);
     const entry = {
@@ -932,7 +902,6 @@ async function submitManual() {
     return;
   }
 
-  // 否則呼叫 AI 查詢
   document.getElementById('manualBox').style.display = 'none';
   document.getElementById('loadingBox').style.display = 'block';
   document.getElementById('loadingText').textContent = 'AI 查詢營養數據中…';
@@ -941,9 +910,8 @@ async function submitManual() {
     const manualHint = document.getElementById('manualHint')?.value?.trim() || '';
     const raw = await callGemini([{ text: MANUAL_PROMPT(fullName, isNaN(prot) ? null : prot, manualHint) }]);
     const parsed = parseJSON(raw);
-    if (!parsed) {
-      throw new Error('無法解析 AI 回應｜原始：' + (raw || '空').slice(0, 200));
-    }
+    if (!parsed) throw new Error('無法解析');
+    
     const entry = makeEntry('manual', null, parsed);
     entry.mealName = fullName;
     if (!isNaN(cal))  entry.calories = cal;
@@ -973,7 +941,6 @@ function clearManualForm() {
 // 共用：建立 entry、完成流程
 // ═══════════════════════════════════════════════
 function makeEntry(type, image, parsed) {
-  // 如果 AI 判斷不是食物，直接拋出錯誤
   if (parsed.isFood === false) throw new Error('NO_FOOD');
   return {
     id: Date.now(), type, image,
@@ -1033,7 +1000,6 @@ function renderResult(entry) {
       </div>`;
   }
 
-  // 血糖影響區塊
   let glucoseHtml = '';
   if (entry.glucoseScore !== undefined) {
     const gs = entry.glucoseScore;
@@ -1260,7 +1226,6 @@ function showExportModal() {
   const days = Object.keys(records).length;
   const total = Object.values(records).reduce((a, r) => a + r.length, 0);
 
-  // Create modal
   const modal = document.createElement('div');
   modal.id = 'exportModal';
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;padding:20px;';
@@ -1268,13 +1233,10 @@ function showExportModal() {
     <div style="background:var(--card);border-radius:16px;padding:20px;flex:1;display:flex;flex-direction:column;max-height:100%;overflow:hidden;">
       <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:6px;">📤 備份資料</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">共 ${days} 天、${total} 筆紀錄</div>
-
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">👇 長按下方文字全選，複製後貼到記事本或 iCloud 備份</div>
-
       <textarea id="exportTextarea" readonly
         style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:11px;font-family:monospace;resize:none;outline:none;overflow-y:auto;"
       >${data}</textarea>
-
       <button onclick="copyExportData()" style="margin-top:12px;width:100%;background:var(--accent);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">
         📋 複製全部資料
       </button>
@@ -1285,7 +1247,6 @@ function showExportModal() {
   `;
   document.body.appendChild(modal);
 
-  // Auto select textarea
   setTimeout(() => {
     const ta = document.getElementById('exportTextarea');
     ta.select();
@@ -1327,7 +1288,6 @@ function showImportModal() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;">
         將之前匯出的 JSON 資料貼到下方，選擇匯入方式後按確認。
       </div>
-
       <div style="margin-bottom:12px;">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">匯入方式</div>
         <div style="display:flex;gap:8px;">
@@ -1347,13 +1307,11 @@ function showImportModal() {
           </label>
         </div>
       </div>
-
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">貼上備份的 JSON 資料</div>
       <textarea id="importTextarea"
         placeholder='貼上備份的 JSON 資料，格式如：{"2026-03-17":[...]}'
         style="width:100%;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:12px;font-family:monospace;resize:none;outline:none;margin-bottom:12px;"
       ></textarea>
-
       <button onclick="confirmImport()" style="width:100%;background:var(--accent2);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">
         ✅ 確認匯入
       </button>
@@ -1377,20 +1335,16 @@ function confirmImport() {
     return;
   }
 
-  // 驗證格式：必須是物件
   if (typeof imported !== 'object' || Array.isArray(imported)) {
     alert('❌ 資料格式不正確');
     return;
   }
 
-  // 支援新格式 { records, foodHistory } 和舊格式（直接是 records）
   let importedRecords, importedFoodHistory;
   if (imported.records && typeof imported.records === 'object') {
-    // 新格式
     importedRecords = imported.records;
     importedFoodHistory = imported.foodHistory || [];
   } else {
-    // 舊格式（只有 records）
     importedRecords = imported;
     importedFoodHistory = [];
   }
@@ -1404,7 +1358,6 @@ function confirmImport() {
       localStorage.setItem('nl_food_history', JSON.stringify(importedFoodHistory));
     }
   } else {
-    // 合併飲食紀錄
     const existing = allRecords();
     for (const [date, entries] of Object.entries(importedRecords)) {
       if (!existing[date]) {
@@ -1417,7 +1370,6 @@ function confirmImport() {
     }
     saveRecords(existing);
 
-    // 合併食物歷史（避免重複）
     if (importedFoodHistory.length) {
       const existingHist = getFoodHistory();
       const merged = [...existingHist];
@@ -1429,7 +1381,6 @@ function confirmImport() {
     }
   }
 
-  // 統計匯入筆數
   for (const entries of Object.values(importedRecords)) {
     days++;
     records += entries.length;
@@ -1455,7 +1406,7 @@ function clearAllData() {
 }
 
 // ═══════════════════════════════════════════════
-// 錯誤訊息
+// 錯誤訊息翻譯官
 // ═══════════════════════════════════════════════
 function friendlyErr(msg) {
   if (!msg) return '分析失敗，請重試';
@@ -1467,6 +1418,7 @@ function friendlyErr(msg) {
   }
   if (msg.includes('fetch') || msg.includes('Network')) return '網路連線失敗，請確認網路';
   if (msg.includes('無法解析')) return 'AI 回傳格式異常，請再試一次或換一張照片';
+  if (msg.includes('NO_FOOD')) return '照片中找不到明顯的食物，請重新拍攝';
   if (msg.includes('設定')) return msg;
   return '分析失敗：' + msg;
 }

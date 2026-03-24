@@ -714,7 +714,7 @@ function clearImage() {
 // ═══════════════════════════════════════════════
 // Gemini API 呼叫與設定
 // ═══════════════════════════════════════════════
-const MODELS = ['gemini-2.5-flash', 'gemini-3-flash-preview'];
+const MODELS = ['gemini-3-flash-preview', 'gemini-2.5-flash'];
 
 async function callGemini(parts) {
   const keys = getAllApiKeys();
@@ -801,27 +801,6 @@ const MANUAL_PROMPT = (food, prot, hint) => {
     'glucoseScore 0到100，high大於70，medium 40到70，low小於40。' +
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
-
-// 穩定的資料解析器（去除干擾符號並自動修復格式）
-function parseJSON(raw) {
-  if (!raw) return null;
-  let s = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
-  const start = s.indexOf('{');
-  const end = s.lastIndexOf('}');
-  if (start === -1 || end === -1 || end <= start) return null;
-  
-  let jsonStr = s.slice(start, end + 1);
-  try {
-    return JSON.parse(jsonStr);
-  } catch (e) {
-    try {
-      return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
-    } catch (e2) {
-      console.error('資料修復失敗:', jsonStr);
-      return null;
-    }
-  }
-}
 
 // ═══════════════════════════════════════════════
 // 拍照分析
@@ -975,11 +954,36 @@ function makeEntry(type, image, parsed) {
   };
 }
 
+// 這裡是你要求修改的地方：新增郵差網址，並在紀錄完成時同步發送
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzL2fdiAPqfSenWmNpgb6ue2YRtL2JlHamzGseP8iHS-DGxxnvtmccRzK2V4494ouQF4A/exec'; 
+
 function finishEntry(entry) {
+  // 原本的本機儲存功能完全保留（不破壞現有邏輯）
   addRecord(entry);
   renderResult(entry);
   renderTodayList();
   updateProgress();
+
+  // 👇 這是新增的邏輯：呼叫郵差把資料送到 Google 試算表
+  if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL.startsWith('http')) {
+    const rowData = {
+      time: new Date().toLocaleString('zh-TW'),
+      type: entry.type === 'manual' ? '手動' : 'AI拍照',
+      mealName: entry.mealName,
+      calories: entry.calories,
+      protein: entry.protein,
+      carbs: entry.carbs || 0,
+      fat: entry.fat || 0,
+      note: entry.note || ''
+    };
+
+    // 使用 fetch 把包裹丟給郵差（設定 text/plain 是為了避開瀏覽器的嚴格安全阻擋）
+    fetch(GOOGLE_SHEET_URL, {
+      method: 'POST',
+      body: JSON.stringify(rowData),
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+    }).catch(err => console.log('上傳試算表失敗', err));
+  }
 }
 
 // ═══════════════════════════════════════════════

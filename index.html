@@ -937,7 +937,9 @@ async function submitManual() {
     const manualHint = document.getElementById('manualHint')?.value?.trim() || '';
     const raw = await callGemini([{ text: MANUAL_PROMPT(fullName, isNaN(prot) ? null : prot, manualHint) }]);
     const parsed = parseJSON(raw);
-    if (!parsed) throw new Error('無法解析 AI 回應');
+    if (!parsed) {
+      throw new Error('無法解析 AI 回應｜原始：' + (raw || '空').slice(0, 200));
+    }
     const entry = makeEntry('manual', null, parsed);
     entry.mealName = fullName;
     if (!isNaN(cal))  entry.calories = cal;

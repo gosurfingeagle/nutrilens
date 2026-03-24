@@ -1478,9 +1478,8 @@ window.onload = function() {
   updateProgress();
   renderTodayList();
 };
-</script>
-</body>
-</html>
+
+// 👇 這是剛剛第三步的程式碼，一定要貼在 </script> 的「上面」！
 // ═══════════════════════════════════════════════
 // ☁️ 從 Google 試算表同步資料
 // ═══════════════════════════════════════════════
@@ -1501,9 +1500,9 @@ async function syncFromGoogleSheet() {
     let importedCount = 0;
 
     data.forEach(row => {
-      // 從試算表的時間字串中 (例如 "2026/3/24 下午2:42:27") 萃取出日期
+      // 從試算表的時間字串中萃取出日期
       const dateMatch = String(row.time).match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-      if (!dateMatch) return; // 如果時間格式不對就跳過
+      if (!dateMatch) return;
 
       const y = dateMatch[1];
       const m = dateMatch[2].padStart(2, '0');
@@ -1512,12 +1511,12 @@ async function syncFromGoogleSheet() {
 
       if (!allRecs[dateStr]) allRecs[dateStr] = [];
 
-      // 避免重複匯入 (簡單比對名稱和熱量)
+      // 避免重複匯入
       const exist = allRecs[dateStr].find(r => r.mealName === row.mealName && r.calories === Number(row.calories));
       
       if (!exist) {
         allRecs[dateStr].push({
-          id: Date.now() + importedCount, // 產生新身分證字號
+          id: Date.now() + importedCount,
           type: row.type === '手動' ? 'manual' : 'ai',
           image: null,
           mealName: row.mealName || '未知餐點',
@@ -1527,13 +1526,12 @@ async function syncFromGoogleSheet() {
           fat: Number(row.fat) || 0,
           foods: [],
           note: row.note || '',
-          time: String(row.time).split(' ').pop() // 簡單取後面的時間部分
+          time: String(row.time).split(' ').pop()
         });
         importedCount++;
       }
     });
 
-    // 儲存並更新畫面
     saveRecords(allRecs);
     renderTodayList();
     updateProgress();
@@ -1546,3 +1544,7 @@ async function syncFromGoogleSheet() {
     document.getElementById('loadingBox').style.display = 'none';
   }
 }
+// 👆 程式碼結束
+</script> 
+</body>
+</html>

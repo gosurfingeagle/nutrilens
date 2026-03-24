@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>NutriLens 食物營養分析</title>
 <style>
-  @import url('[https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap](https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap)');
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
     --bg: #0a0a0f; --card: #1a1a24; --border: #2a2a3a;
@@ -357,7 +357,7 @@
       <div class="api-steps">
         <p>免費申請步驟</p>
         <ol>
-          <li>前往 <a href="[https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)" target="_blank">Google AI Studio →</a></li>
+          <li>前往 <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio →</a></li>
           <li>用 Google 帳號登入</li>
           <li>點「Create API key」</li>
           <li>複製 Key（以 AIzaSy 開頭）貼到下方</li>
@@ -454,7 +454,6 @@
     <div class="settings-section">
       <div class="settings-title">🗃️ 資料管理</div>
       <button class="save-btn" style="background:#6ee0ff;color:#0a0a0f;margin-bottom:8px" onclick="syncFromGoogleSheet()">☁️ 從 Google 試算表同步資料</button>
-      
       <button class="save-btn" onclick="exportData()">📤 匯出本機備份</button>
       <button class="save-btn" style="background:transparent;color:var(--text);border:1px solid var(--border);margin-top:8px" onclick="showImportModal()">📥 匯入本機備份</button>
       <button class="danger-btn" onclick="clearAllData()">⚠️ 清除所有紀錄</button>
@@ -464,6 +463,9 @@
 </div>
 
 <script>
+// ⚠️ 貼上你的 Google 試算表 Web App 網址 ⚠️
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzL2fdiAPqfSenWmNpgb6ue2YRtL2JlHamzGseP8iHS-DGxxnvtmccRzK2V4494ouQF4A/exec'; 
+
 // ═══════════════════════════════════════════════
 // 狀態與工具
 // ═══════════════════════════════════════════════
@@ -475,15 +477,9 @@ let curDay = todayKey();
 let curMonth = monthKey(new Date());
 let activeSection = null;
 
-function todayKey() {
-  return new Date().toISOString().split('T')[0];
-}
-function monthKey(d) {
-  return d.toISOString().slice(0, 7);
-}
-function fmtTime() {
-  return new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
-}
+function todayKey() { return new Date().toISOString().split('T')[0]; }
+function monthKey(d) { return d.toISOString().slice(0, 7); }
+function fmtTime() { return new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' }); }
 
 // ═══════════════════════════════════════════════
 // 設定 / API Key
@@ -492,17 +488,13 @@ function loadSettings() {
   const s = localStorage.getItem('nl_settings');
   if (s) try { settings = { ...settings, ...JSON.parse(s) }; } catch(e) {}
 }
-function persistSettings() {
-  localStorage.setItem('nl_settings', JSON.stringify(settings));
-}
+function persistSettings() { localStorage.setItem('nl_settings', JSON.stringify(settings)); }
 function getApiKey() { return localStorage.getItem('nl_gemini_key') || ''; }
 function getApiKey2() { return localStorage.getItem('nl_gemini_key2') || ''; }
 function getAllApiKeys() {
   const keys = [];
-  const k1 = getApiKey();
-  const k2 = getApiKey2();
-  if (k1) keys.push(k1);
-  if (k2) keys.push(k2);
+  const k1 = getApiKey(); const k2 = getApiKey2();
+  if (k1) keys.push(k1); if (k2) keys.push(k2);
   return keys;
 }
 
@@ -522,31 +514,26 @@ function saveApiKey() {
   }
 }
 function clearApiKey() {
-  localStorage.removeItem('nl_gemini_key');
-  localStorage.removeItem('nl_gemini_key2');
-  document.getElementById('apiKeyInput').value = '';
-  document.getElementById('apiKeyInput2').value = '';
+  localStorage.removeItem('nl_gemini_key'); localStorage.removeItem('nl_gemini_key2');
+  document.getElementById('apiKeyInput').value = ''; document.getElementById('apiKeyInput2').value = '';
   setApiStatus('已清除', false);
 }
 function setApiStatus(msg, ok) {
   const el = document.getElementById('apiStatus');
-  el.textContent = msg;
-  el.style.color = ok ? 'var(--accent)' : 'var(--muted)';
+  el.textContent = msg; el.style.color = ok ? 'var(--accent)' : 'var(--muted)';
 }
 
 function saveGoals() {
   const c = parseInt(document.getElementById('goalCal').value) || 2000;
   const p = parseInt(document.getElementById('goalProt').value) || 130;
   settings.goalCal = c; settings.goalProt = p;
-  persistSettings();
-  updateProgress();
+  persistSettings(); updateProgress();
   alert('✅ 目標已儲存');
 }
 
 let _activityFactor = 1.2;
 function setActivity(factor, btnId) {
-  _activityFactor = factor;
-  settings.activity = factor;
+  _activityFactor = factor; settings.activity = factor;
   document.querySelectorAll('.act-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(btnId).classList.add('active');
 }
@@ -564,11 +551,8 @@ function calcBMR() {
   persistSettings();
 
   let bmr;
-  if (gender === 'male') {
-    bmr = 10 * weight + 6.25 * height - 5 * age + 5;
-  } else {
-    bmr = 10 * weight + 6.25 * height - 5 * age - 161;
-  }
+  if (gender === 'male') { bmr = 10 * weight + 6.25 * height - 5 * age + 5; } 
+  else { bmr = 10 * weight + 6.25 * height - 5 * age - 161; }
   const tdee = Math.round(bmr * _activityFactor);
   const bmi  = (weight / ((height / 100) ** 2)).toFixed(1);
 
@@ -596,10 +580,8 @@ function calcBMR() {
 function applyBMR() {
   if (!window._bmrData) return;
   const { tdee, protMid } = window._bmrData;
-  settings.goalCal  = tdee;
-  settings.goalProt = protMid;
-  persistSettings();
-  updateProgress();
+  settings.goalCal  = tdee; settings.goalProt = protMid;
+  persistSettings(); updateProgress();
   document.getElementById('goalCal').value  = tdee;
   document.getElementById('goalProt').value = protMid;
   alert(`✅ 已套用！每日熱量目標：${tdee} kcal，蛋白質目標：${protMid}g`);
@@ -615,15 +597,12 @@ function saveRecords(r) { localStorage.setItem('nl_records', JSON.stringify(r));
 function todayRecords() { return allRecords()[todayKey()] || []; }
 
 function addRecord(entry) {
-  const all = allRecords();
-  const k = todayKey();
+  const all = allRecords(); const k = todayKey();
   if (!all[k]) all[k] = [];
-  all[k].unshift(entry);
-  saveRecords(all);
+  all[k].unshift(entry); saveRecords(all);
 }
 function removeRecord(dateStr, id) {
-  const all = allRecords();
-  if (!all[dateStr]) return;
+  const all = allRecords(); if (!all[dateStr]) return;
   all[dateStr] = all[dateStr].filter(e => e.id !== id);
   if (!all[dateStr].length) delete all[dateStr];
   saveRecords(all);
@@ -643,8 +622,7 @@ function switchTab(name) {
 }
 
 function initSettings() {
-  const key1 = getApiKey();
-  const key2 = getApiKey2();
+  const key1 = getApiKey(); const key2 = getApiKey2();
   document.getElementById('apiKeyInput').value  = key1 ? '••••••••••••••••' : '';
   document.getElementById('apiKeyInput2').value = key2 ? '••••••••••••••••' : '';
   const statusMsg = key1 && key2 ? '✅ 主要 Key + 備用 Key 均已設定' :
@@ -664,11 +642,7 @@ function initSettings() {
 }
 
 function toggleSection(name) {
-  if (activeSection === name) {
-    activeSection = null;
-  } else {
-    activeSection = name;
-  }
+  if (activeSection === name) { activeSection = null; } else { activeSection = name; }
   document.getElementById('uploadZone').style.display = activeSection === 'upload' ? 'block' : 'none';
   document.getElementById('manualBox').style.display  = activeSection === 'manual' ? 'block' : 'none';
   if (activeSection === 'manual') renderQuickPick();
@@ -678,14 +652,11 @@ function toggleSection(name) {
 // 圖片處理
 // ═══════════════════════════════════════════════
 function handleFile(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const img = new Image();
-  const reader = new FileReader();
+  const file = input.files[0]; if (!file) return;
+  const img = new Image(); const reader = new FileReader();
   reader.onload = function(e) {
     img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const MAX = 1024;
+      const canvas = document.createElement('canvas'); const MAX = 1024;
       let w = img.width, h = img.height;
       if (w > MAX || h > MAX) {
         if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -703,8 +674,7 @@ function handleFile(input) {
     };
     img.src = e.target.result;
   };
-  reader.readAsDataURL(file);
-  input.value = '';
+  reader.readAsDataURL(file); input.value = '';
 }
 
 function clearImage() {
@@ -716,14 +686,12 @@ function clearImage() {
 // ═══════════════════════════════════════════════
 // Gemini API 呼叫與設定
 // ═══════════════════════════════════════════════
-const MODELS = ['gemini-3-flash-preview', 'gemini-2.5-flash'];
+const MODELS = ['gemini-2.5-flash', 'gemini-3-flash-preview'];
 
 async function callGemini(parts) {
   const keys = getAllApiKeys();
   if (!keys.length) throw new Error('請先在「設定」頁面輸入 Gemini API Key');
-
-  let lastErr = '';
-  let quotaExhaustedKeys = 0;
+  let lastErr = ''; let quotaExhaustedKeys = 0;
 
   for (const apiKey of keys) {
     for (const model of MODELS) {
@@ -734,9 +702,7 @@ async function callGemini(parts) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts }],
-            // 1. 維持高字數限制
             generationConfig: { temperature: 0.1, maxOutputTokens: 8192, responseMimeType: "application/json" },
-            // 2. 這裡是你要求修改的地方：把 AI 的安全敏感度全部關閉，防止它誤判食物而強制閉嘴
             safetySettings: [
               { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
               { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
@@ -745,37 +711,26 @@ async function callGemini(parts) {
             ]
           })
         });
-        
         if (resp.ok) {
           const data = await resp.json();
           const candidate = data.candidates?.[0];
           if (!candidate) throw new Error('未收到 AI 回應');
-          
-          // 3. 攔截機制：如果 AI 又被莫名其妙切斷，馬上印出真正的中斷代碼
           if (candidate.finishReason !== 'STOP') {
              throw new Error('被強制中斷，原因代碼：' + candidate.finishReason);
           }
-
           const keyIndex = keys.indexOf(apiKey) + 1;
           if (keyIndex === 2) console.log('✅ 使用備用 Key 分析成功');
           return candidate.content?.parts?.[0]?.text || '';
         }
-        
         const ed = await resp.json().catch(() => ({}));
         lastErr = ed.error?.message || `HTTP ${resp.status}`;
         if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED')) {
-          quotaExhaustedKeys++;
-          break; 
+          quotaExhaustedKeys++; break; 
         }
-      } catch(e) {
-        lastErr = e.message;
-      }
+      } catch(e) { lastErr = e.message; }
     }
   }
-
-  if (quotaExhaustedKeys >= keys.length) {
-    throw new Error('quota');
-  }
+  if (quotaExhaustedKeys >= keys.length) throw new Error('quota');
   throw new Error(lastErr || '無法連接 Gemini API');
 }
 
@@ -807,20 +762,12 @@ const MANUAL_PROMPT = (food, prot, hint) => {
 function parseJSON(raw) {
   if (!raw) return null;
   let s = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
-  const start = s.indexOf('{');
-  const end = s.lastIndexOf('}');
+  const start = s.indexOf('{'); const end = s.lastIndexOf('}');
   if (start === -1 || end === -1 || end <= start) return null;
-  
   let jsonStr = s.slice(start, end + 1);
-  try {
-    return JSON.parse(jsonStr);
-  } catch (e) {
-    try {
-      return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']'));
-    } catch (e2) {
-      console.error('資料修復失敗:', jsonStr);
-      return null;
-    }
+  try { return JSON.parse(jsonStr); } catch (e) {
+    try { return JSON.parse(jsonStr.replace(/,\s*}/g, '}').replace(/,\s*]/g, ']')); } 
+    catch (e2) { console.error('資料修復失敗:', jsonStr); return null; }
   }
 }
 
@@ -847,11 +794,8 @@ async function analyzeImage() {
     const entry = makeEntry('ai', savedImg, parsed);
     finishEntry(entry);
     currentImageB64 = null;
-  } catch(err) {
-    showError(friendlyErr(err.message));
-  } finally {
-    document.getElementById('loadingBox').style.display = 'none';
-  }
+  } catch(err) { showError(friendlyErr(err.message)); } 
+  finally { document.getElementById('loadingBox').style.display = 'none'; }
 }
 
 // ═══════════════════════════════════════════════
@@ -868,14 +812,11 @@ function saveFoodToHistory(food, qty, unit, cal, prot) {
   localStorage.setItem('nl_food_history', JSON.stringify(hist));
 }
 
-function onFoodInput() {
-  renderQuickPick();
-}
+function onFoodInput() { renderQuickPick(); }
 
 function renderQuickPick() {
   const hist = getFoodHistory();
-  const wrap = document.getElementById('quickPickWrap');
-  const list = document.getElementById('quickPickList');
+  const wrap = document.getElementById('quickPickWrap'); const list = document.getElementById('quickPickList');
   if (!hist.length) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
   list.innerHTML = '<div class="quick-chips">' +
@@ -886,8 +827,7 @@ function renderQuickPick() {
 }
 
 function applyQuickPick(i) {
-  const h = getFoodHistory()[i];
-  if (!h) return;
+  const h = getFoodHistory()[i]; if (!h) return;
   document.getElementById('manualFood').value = h.food;
   document.getElementById('manualQty').value  = h.qty || '';
   document.getElementById('manualUnit').value = h.unit || 'g';
@@ -909,14 +849,11 @@ async function submitManual() {
     saveFoodToHistory(food, qty, unit, cal, prot);
     const entry = {
       id: Date.now(), type: 'manual', image: null,
-      mealName: fullName, calories: cal, protein: prot,
-      carbs: 0, fat: 0,
+      mealName: fullName, calories: cal, protein: prot, carbs: 0, fat: 0,
       foods: [{ name: fullName, calories: cal, carbs: 0, protein: prot, fat: 0 }],
       note: '', time: fmtTime()
     };
-    finishEntry(entry);
-    clearManualForm();
-    return;
+    finishEntry(entry); clearManualForm(); return;
   }
 
   document.getElementById('manualBox').style.display = 'none';
@@ -934,28 +871,21 @@ async function submitManual() {
     if (!isNaN(cal))  entry.calories = cal;
     if (!isNaN(prot)) entry.protein  = prot;
     saveFoodToHistory(food, qty, unit, entry.calories, entry.protein);
-    finishEntry(entry);
-    clearManualForm();
+    finishEntry(entry); clearManualForm();
   } catch(err) {
-    showError(friendlyErr(err.message));
-    document.getElementById('manualBox').style.display = 'block';
-  } finally {
-    document.getElementById('loadingBox').style.display = 'none';
-  }
+    showError(friendlyErr(err.message)); document.getElementById('manualBox').style.display = 'block';
+  } finally { document.getElementById('loadingBox').style.display = 'none'; }
 }
 
 function clearManualForm() {
-  document.getElementById('manualFood').value  = '';
-  document.getElementById('manualQty').value   = '';
-  document.getElementById('manualCal').value   = '';
-  document.getElementById('manualProt').value  = '';
-  document.getElementById('manualHint').value  = '';
-  activeSection = null;
+  document.getElementById('manualFood').value  = ''; document.getElementById('manualQty').value   = '';
+  document.getElementById('manualCal').value   = ''; document.getElementById('manualProt').value  = '';
+  document.getElementById('manualHint').value  = ''; activeSection = null;
   document.getElementById('manualBox').style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════
-// 共用：建立 entry、完成流程
+// 共用：建立 entry、完成流程、雲端同步
 // ═══════════════════════════════════════════════
 function makeEntry(type, image, parsed) {
   if (parsed.isFood === false) throw new Error('NO_FOOD');
@@ -971,39 +901,23 @@ function makeEntry(type, image, parsed) {
     glucoseLevel: parsed.glucoseLevel || undefined,
     glucoseNote:  parsed.glucoseNote  || undefined,
     foods: Array.isArray(parsed.foods) ? parsed.foods : [],
-    note: parsed.note || '',
-    time: fmtTime()
+    note: parsed.note || '', time: fmtTime()
   };
 }
 
-// 這裡是你要求修改的地方：新增郵差網址，並在紀錄完成時同步發送
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzL2fdiAPqfSenWmNpgb6ue2YRtL2JlHamzGseP8iHS-DGxxnvtmccRzK2V4494ouQF4A/exec'; 
-
 function finishEntry(entry) {
-  // 原本的本機儲存功能完全保留（不破壞現有邏輯）
-  addRecord(entry);
-  renderResult(entry);
-  renderTodayList();
-  updateProgress();
+  addRecord(entry); renderResult(entry); renderTodayList(); updateProgress();
 
-  // 👇 這是新增的邏輯：呼叫郵差把資料送到 Google 試算表
   if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL.startsWith('http')) {
     const rowData = {
       time: new Date().toLocaleString('zh-TW'),
       type: entry.type === 'manual' ? '手動' : 'AI拍照',
       mealName: entry.mealName,
-      calories: entry.calories,
-      protein: entry.protein,
-      carbs: entry.carbs || 0,
-      fat: entry.fat || 0,
+      calories: entry.calories, protein: entry.protein, carbs: entry.carbs || 0, fat: entry.fat || 0,
       note: entry.note || ''
     };
-
-    // 使用 fetch 把包裹丟給郵差（設定 text/plain 是為了避開瀏覽器的嚴格安全阻擋）
     fetch(GOOGLE_SHEET_URL, {
-      method: 'POST',
-      body: JSON.stringify(rowData),
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+      method: 'POST', body: JSON.stringify(rowData), headers: { 'Content-Type': 'text/plain;charset=utf-8' }
     }).catch(err => console.log('上傳試算表失敗', err));
   }
 }
@@ -1027,8 +941,7 @@ function renderResult(entry) {
      </div>`).join('');
 
   const isManual = entry.type === 'manual';
-  const conf = entry.confidence;
-  let confHtml = '';
+  const conf = entry.confidence; let confHtml = '';
   if (conf !== undefined && !isManual) {
     const confColor = conf >= 80 ? 'var(--accent)' : conf >= 60 ? 'var(--accent3)' : 'var(--danger)';
     const confLabel = conf >= 80 ? '高' : conf >= 60 ? '中' : '低';
@@ -1083,25 +996,15 @@ function renderResult(entry) {
 }
 
 function renderTodayList() {
-  const records = todayRecords();
-  const empty = document.getElementById('emptyState');
-  const list  = document.getElementById('todayList');
+  const records = todayRecords(); const empty = document.getElementById('emptyState'); const list  = document.getElementById('todayList');
   if (!records.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   list.innerHTML = records.map(h => {
-    const thumb = h.image
-      ? `<div class="today-thumb"><img src="${h.image}"></div>`
-      : `<div class="today-thumb">${h.type === 'manual' ? '✏️' : '🍽️'}</div>`;
+    const thumb = h.image ? `<div class="today-thumb"><img src="${h.image}"></div>` : `<div class="today-thumb">${h.type === 'manual' ? '✏️' : '🍽️'}</div>`;
     const badge = `<span class="type-badge ${h.type === 'manual' ? 'type-manual' : 'type-ai'}">${h.type === 'manual' ? '手動' : 'AI'}</span>`;
     return `<div class="today-item">${thumb}
-      <div class="today-info">
-        <div class="today-name">${h.mealName}${badge}</div>
-        <div class="today-time">${h.time}</div>
-      </div>
-      <div class="today-nums">
-        <div class="today-cal">${h.calories} kcal</div>
-        <div class="today-prot">蛋白 ${h.protein}g</div>
-      </div>
+      <div class="today-info"><div class="today-name">${h.mealName}${badge}</div><div class="today-time">${h.time}</div></div>
+      <div class="today-nums"><div class="today-cal">${h.calories} kcal</div><div class="today-prot">蛋白 ${h.protein}g</div></div>
       <button class="today-del" onclick="deleteToday(${h.id})">✕</button>
     </div>`;
   }).join('');
@@ -1109,23 +1012,18 @@ function renderTodayList() {
 
 function updateProgress() {
   const recs = todayRecords();
-  const cal  = recs.reduce((a,r) => a + r.calories, 0);
-  const prot = recs.reduce((a,r) => a + r.protein,  0);
+  const cal  = recs.reduce((a,r) => a + r.calories, 0); const prot = recs.reduce((a,r) => a + r.protein,  0);
   document.getElementById('calVal').innerHTML  = `${cal} <span id="calGoalLabel">/ ${settings.goalCal} kcal</span>`;
   document.getElementById('protVal').innerHTML = `${prot} <span id="protGoalLabel">/ ${settings.goalProt} g</span>`;
   document.getElementById('calBar').style.width  = Math.min(cal  / settings.goalCal  * 100, 100) + '%';
   document.getElementById('protBar').style.width = Math.min(prot / settings.goalProt * 100, 100) + '%';
 }
 
-function deleteToday(id) {
-  removeRecord(todayKey(), id);
-  renderTodayList(); updateProgress();
-}
+function deleteToday(id) { removeRecord(todayKey(), id); renderTodayList(); updateProgress(); }
 function clearToday() {
   if (!confirm('確定清除今日所有紀錄？')) return;
   const all = allRecords(); delete all[todayKey()]; saveRecords(all);
-  renderTodayList(); updateProgress();
-  document.getElementById('resultCard').style.display = 'none';
+  renderTodayList(); updateProgress(); document.getElementById('resultCard').style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════
@@ -1139,40 +1037,24 @@ function setView(v) {
   document.getElementById('viewMonth').style.display = v === 'month' ? 'block' : 'none';
   renderHistory();
 }
-
 function shiftDay(d) {
-  const dt = new Date(curDay + 'T12:00:00');
-  dt.setDate(dt.getDate() + d);
+  const dt = new Date(curDay + 'T12:00:00'); dt.setDate(dt.getDate() + d);
   if (dt > new Date()) return;
-  curDay = dt.toISOString().split('T')[0];
-  renderHistory();
+  curDay = dt.toISOString().split('T')[0]; renderHistory();
 }
 function shiftMonth(d) {
-  const [y,m] = curMonth.split('-').map(Number);
-  const dt = new Date(y, m - 1 + d, 1);
+  const [y,m] = curMonth.split('-').map(Number); const dt = new Date(y, m - 1 + d, 1);
   if (dt > new Date()) return;
-  curMonth = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`;
-  renderHistory();
+  curMonth = `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}`; renderHistory();
 }
-
-function renderHistory() {
-  if (histView === 'day') renderDayView();
-  else renderMonthView();
-}
+function renderHistory() { if (histView === 'day') renderDayView(); else renderMonthView(); }
 
 function renderDayView() {
-  const all = allRecords();
-  const recs = all[curDay] || [];
-  const dt = new Date(curDay + 'T12:00:00');
-  const isToday = curDay === todayKey();
-  const days = ['日','一','二','三','四','五','六'];
-  document.getElementById('dayLabel').textContent = isToday
-    ? '今天'
-    : `${dt.getMonth()+1}/${dt.getDate()} (${days[dt.getDay()]})`;
+  const all = allRecords(); const recs = all[curDay] || []; const dt = new Date(curDay + 'T12:00:00');
+  const isToday = curDay === todayKey(); const days = ['日','一','二','三','四','五','六'];
+  document.getElementById('dayLabel').textContent = isToday ? '今天' : `${dt.getMonth()+1}/${dt.getDate()} (${days[dt.getDay()]})`;
 
-  const cal  = recs.reduce((a,r) => a+r.calories, 0);
-  const prot = recs.reduce((a,r) => a+r.protein,  0);
-
+  const cal  = recs.reduce((a,r) => a+r.calories, 0); const prot = recs.reduce((a,r) => a+r.protein,  0);
   document.getElementById('daySummaryEl').innerHTML = recs.length ? `
     <div class="summary-card">
       <div class="summary-top">當日合計</div>
@@ -1185,9 +1067,7 @@ function renderDayView() {
 
   document.getElementById('dayEntriesEl').innerHTML = recs.length
     ? recs.map(h => {
-        const thumb = h.image
-          ? `<div class="hist-thumb"><img src="${h.image}"></div>`
-          : `<div class="hist-thumb">${h.type==='manual'?'✏️':'🍽️'}</div>`;
+        const thumb = h.image ? `<div class="hist-thumb"><img src="${h.image}"></div>` : `<div class="hist-thumb">${h.type==='manual'?'✏️':'🍽️'}</div>`;
         const badge = `<span class="type-badge ${h.type==='manual'?'type-manual':'type-ai'}">${h.type==='manual'?'手動':'AI'}</span>`;
         return `<div class="hist-item">${thumb}
           <div class="hist-info"><div class="hist-name">${h.mealName}${badge}</div><div class="hist-time">${h.time}</div></div>
@@ -1198,19 +1078,15 @@ function renderDayView() {
 }
 
 function renderMonthView() {
-  const all = allRecords();
-  const [y,m] = curMonth.split('-').map(Number);
+  const all = allRecords(); const [y,m] = curMonth.split('-').map(Number);
   document.getElementById('monthLabel').textContent = `${y}年${m}月`;
-
   const daysInMonth = new Date(y, m, 0).getDate();
-  let totalCal = 0, totalProt = 0, daysWithData = 0;
-  const dayData = [];
+  let totalCal = 0, totalProt = 0, daysWithData = 0; const dayData = [];
 
   for (let d = 1; d <= daysInMonth; d++) {
     const k = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const recs = all[k] || [];
-    const cal  = recs.reduce((a,r) => a+r.calories, 0);
-    const prot = recs.reduce((a,r) => a+r.protein,  0);
+    const cal  = recs.reduce((a,r) => a+r.calories, 0); const prot = recs.reduce((a,r) => a+r.protein,  0);
     dayData.push({ d, k, cal, prot, n: recs.length });
     if (recs.length) { totalCal += cal; totalProt += prot; daysWithData++; }
   }
@@ -1238,8 +1114,7 @@ function renderMonthView() {
       </div>
     </div>`;
 
-  const hasDays = dayData.filter(x => x.n > 0).reverse();
-  const days = ['日','一','二','三','四','五','六'];
+  const hasDays = dayData.filter(x => x.n > 0).reverse(); const days = ['日','一','二','三','四','五','六'];
   document.getElementById('monthDaysEl').innerHTML = hasDays.length
     ? hasDays.map(x => {
         const dt = new Date(x.k + 'T12:00:00');
@@ -1251,170 +1126,91 @@ function renderMonthView() {
       }).join('')
     : `<div class="empty-state">本月尚無紀錄</div>`;
 }
-
-function jumpDay(k) {
-  curDay = k;
-  setView('day');
-}
+function jumpDay(k) { curDay = k; setView('day'); }
 
 // ═══════════════════════════════════════════════
-// 匯出 / 清除
+// 匯出 / 匯入 / 清除
 // ═══════════════════════════════════════════════
 function showExportModal() {
-  const records = allRecords();
-  const foodHistory = getFoodHistory();
-  const exportObj = { records, foodHistory };
-  const data = JSON.stringify(exportObj, null, 2);
-  const days = Object.keys(records).length;
-  const total = Object.values(records).reduce((a, r) => a + r.length, 0);
+  const records = allRecords(); const foodHistory = getFoodHistory();
+  const exportObj = { records, foodHistory }; const data = JSON.stringify(exportObj, null, 2);
+  const days = Object.keys(records).length; const total = Object.values(records).reduce((a, r) => a + r.length, 0);
 
-  const modal = document.createElement('div');
-  modal.id = 'exportModal';
+  const modal = document.createElement('div'); modal.id = 'exportModal';
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;padding:20px;';
   modal.innerHTML = `
     <div style="background:var(--card);border-radius:16px;padding:20px;flex:1;display:flex;flex-direction:column;max-height:100%;overflow:hidden;">
       <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:6px;">📤 備份資料</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">共 ${days} 天、${total} 筆紀錄</div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">👇 長按下方文字全選，複製後貼到記事本或 iCloud 備份</div>
-      <textarea id="exportTextarea" readonly
-        style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:11px;font-family:monospace;resize:none;outline:none;overflow-y:auto;"
-      >${data}</textarea>
-      <button onclick="copyExportData()" style="margin-top:12px;width:100%;background:var(--accent);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">
-        📋 複製全部資料
-      </button>
-      <button onclick="closeExportModal()" style="margin-top:8px;width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;cursor:pointer;">
-        關閉
-      </button>
-    </div>
-  `;
+      <textarea id="exportTextarea" readonly style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:11px;font-family:monospace;resize:none;outline:none;overflow-y:auto;">${data}</textarea>
+      <button onclick="copyExportData()" style="margin-top:12px;width:100%;background:var(--accent);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">📋 複製全部資料</button>
+      <button onclick="closeExportModal()" style="margin-top:8px;width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;cursor:pointer;">關閉</button>
+    </div>`;
   document.body.appendChild(modal);
-
-  setTimeout(() => {
-    const ta = document.getElementById('exportTextarea');
-    ta.select();
-    ta.setSelectionRange(0, 99999);
-  }, 300);
+  setTimeout(() => { const ta = document.getElementById('exportTextarea'); ta.select(); ta.setSelectionRange(0, 99999); }, 300);
 }
-
 function copyExportData() {
-  const ta = document.getElementById('exportTextarea');
-  ta.select();
-  ta.setSelectionRange(0, 99999);
-  try {
-    navigator.clipboard.writeText(ta.value).then(() => {
-      alert('✅ 已複製！請貼到記事本或 iCloud 備份。');
-    }).catch(() => {
-      document.execCommand('copy');
-      alert('✅ 已複製！請貼到記事本或 iCloud 備份。');
-    });
-  } catch(e) {
-    document.execCommand('copy');
-    alert('✅ 已複製！請貼到記事本或 iCloud 備份。');
-  }
+  const ta = document.getElementById('exportTextarea'); ta.select(); ta.setSelectionRange(0, 99999);
+  try { navigator.clipboard.writeText(ta.value).then(() => { alert('✅ 已複製！請貼到記事本或 iCloud 備份。'); }).catch(() => { document.execCommand('copy'); alert('✅ 已複製！'); }); } 
+  catch(e) { document.execCommand('copy'); alert('✅ 已複製！'); }
 }
-
-function closeExportModal() {
-  const m = document.getElementById('exportModal');
-  if (m) m.remove();
-}
-
+function closeExportModal() { const m = document.getElementById('exportModal'); if (m) m.remove(); }
 function exportData() { showExportModal(); }
 
 function showImportModal() {
-  const modal = document.createElement('div');
-  modal.id = 'importModal';
+  const modal = document.createElement('div'); modal.id = 'importModal';
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;padding:16px;';
   modal.innerHTML = `
     <div style="background:var(--card);border-radius:20px 20px 16px 16px;padding:20px;width:100%;max-height:85vh;overflow-y:auto;">
       <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:6px;">📥 匯入資料備份</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;">
-        將之前匯出的 JSON 資料貼到下方，選擇匯入方式後按確認。
-      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;">將之前匯出的 JSON 資料貼到下方，選擇匯入方式後按確認。</div>
       <div style="margin-bottom:12px;">
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">匯入方式</div>
         <div style="display:flex;gap:8px;">
-          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;">
-            <input type="radio" name="importMode" value="merge" checked style="accent-color:var(--accent)">
-            <div>
-              <div style="font-size:13px;font-weight:600;">合併</div>
-              <div style="font-size:11px;color:var(--muted);">新資料加入現有紀錄</div>
-            </div>
-          </label>
-          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;">
-            <input type="radio" name="importMode" value="replace" style="accent-color:var(--accent)">
-            <div>
-              <div style="font-size:13px;font-weight:600;">取代</div>
-              <div style="font-size:11px;color:var(--muted);">清除現有，完全替換</div>
-            </div>
-          </label>
+          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;"><input type="radio" name="importMode" value="merge" checked style="accent-color:var(--accent)"><div><div style="font-size:13px;font-weight:600;">合併</div><div style="font-size:11px;color:var(--muted);">新資料加入現有紀錄</div></div></label>
+          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;"><input type="radio" name="importMode" value="replace" style="accent-color:var(--accent)"><div><div style="font-size:13px;font-weight:600;">取代</div><div style="font-size:11px;color:var(--muted);">清除現有，完全替換</div></div></label>
         </div>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">貼上備份的 JSON 資料</div>
-      <textarea id="importTextarea"
-        placeholder='貼上備份的 JSON 資料，格式如：{"2026-03-17":[...]}'
-        style="width:100%;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:12px;font-family:monospace;resize:none;outline:none;margin-bottom:12px;"
-      ></textarea>
-      <button onclick="confirmImport()" style="width:100%;background:var(--accent2);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">
-        ✅ 確認匯入
-      </button>
-      <button onclick="closeImportModal()" style="width:100%;margin-top:8px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;cursor:pointer;">
-        取消
-      </button>
-    </div>
-  `;
+      <textarea id="importTextarea" placeholder='貼上備份的 JSON 資料，格式如：{"2026-03-17":[...]}' style="width:100%;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:12px;font-family:monospace;resize:none;outline:none;margin-bottom:12px;"></textarea>
+      <button onclick="confirmImport()" style="width:100%;background:var(--accent2);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">✅ 確認匯入</button>
+      <button onclick="closeImportModal()" style="width:100%;margin-top:8px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;cursor:pointer;">取消</button>
+    </div>`;
   document.body.appendChild(modal);
 }
 
 function confirmImport() {
   const raw = document.getElementById('importTextarea').value.trim();
   if (!raw) { alert('請先貼上備份資料'); return; }
-
   let imported;
-  try {
-    imported = JSON.parse(raw);
-  } catch(e) {
-    alert('❌ 資料格式錯誤，請確認貼上的是正確的 JSON 備份');
-    return;
-  }
-
-  if (typeof imported !== 'object' || Array.isArray(imported)) {
-    alert('❌ 資料格式不正確');
-    return;
-  }
+  try { imported = JSON.parse(raw); } catch(e) { alert('❌ 資料格式錯誤，請確認貼上的是正確的 JSON 備份'); return; }
+  if (typeof imported !== 'object' || Array.isArray(imported)) { alert('❌ 資料格式不正確'); return; }
 
   let importedRecords, importedFoodHistory;
   if (imported.records && typeof imported.records === 'object') {
-    importedRecords = imported.records;
-    importedFoodHistory = imported.foodHistory || [];
-  } else {
-    importedRecords = imported;
-    importedFoodHistory = [];
-  }
+    importedRecords = imported.records; importedFoodHistory = imported.foodHistory || [];
+  } else { importedRecords = imported; importedFoodHistory = []; }
 
   const mode = document.querySelector('input[name="importMode"]:checked').value;
   let days = 0, records = 0;
 
   if (mode === 'replace') {
     saveRecords(importedRecords);
-    if (importedFoodHistory.length) {
-      localStorage.setItem('nl_food_history', JSON.stringify(importedFoodHistory));
-    }
+    if (importedFoodHistory.length) localStorage.setItem('nl_food_history', JSON.stringify(importedFoodHistory));
   } else {
     const existing = allRecords();
     for (const [date, entries] of Object.entries(importedRecords)) {
-      if (!existing[date]) {
-        existing[date] = entries;
-      } else {
+      if (!existing[date]) { existing[date] = entries; } 
+      else {
         const existingIds = new Set(existing[date].map(e => e.id));
         const newEntries = entries.filter(e => !existingIds.has(e.id));
         existing[date] = [...existing[date], ...newEntries];
       }
     }
     saveRecords(existing);
-
     if (importedFoodHistory.length) {
-      const existingHist = getFoodHistory();
-      const merged = [...existingHist];
+      const existingHist = getFoodHistory(); const merged = [...existingHist];
       for (const item of importedFoodHistory) {
         const dup = merged.find(h => h.food === item.food && h.unit === item.unit);
         if (!dup) merged.push(item);
@@ -1422,29 +1218,63 @@ function confirmImport() {
       localStorage.setItem('nl_food_history', JSON.stringify(merged.slice(0, 20)));
     }
   }
-
-  for (const entries of Object.values(importedRecords)) {
-    days++;
-    records += entries.length;
-  }
-
-  closeImportModal();
-  renderTodayList();
-  updateProgress();
+  for (const entries of Object.values(importedRecords)) { days++; records += entries.length; }
+  closeImportModal(); renderTodayList(); updateProgress();
   alert(`✅ 匯入成功！共 ${days} 天、${records} 筆紀錄（${mode === 'merge' ? '合併' : '取代'}模式）`);
 }
-
-function closeImportModal() {
-  const m = document.getElementById('importModal');
-  if (m) m.remove();
-}
+function closeImportModal() { const m = document.getElementById('importModal'); if (m) m.remove(); }
 
 function clearAllData() {
   if (!confirm('⚠️ 確定清除所有飲食紀錄？')) return;
   localStorage.removeItem('nl_records');
-  renderTodayList(); updateProgress();
-  document.getElementById('resultCard').style.display = 'none';
+  renderTodayList(); updateProgress(); document.getElementById('resultCard').style.display = 'none';
   alert('已清除');
+}
+
+// ═══════════════════════════════════════════════
+// ☁️ 從 Google 試算表同步資料 (已確保在 script 裡面)
+// ═══════════════════════════════════════════════
+async function syncFromGoogleSheet() {
+  if (typeof GOOGLE_SHEET_URL === 'undefined' || !GOOGLE_SHEET_URL.startsWith('http')) {
+    alert('⚠️ 找不到 Google 試算表網址，請確認程式碼中的 GOOGLE_SHEET_URL。'); return;
+  }
+  document.getElementById('loadingBox').style.display = 'block';
+  document.getElementById('loadingText').textContent = '正在從 Google 試算表下載資料…';
+  try {
+    const resp = await fetch(GOOGLE_SHEET_URL);
+    const data = await resp.json();
+    const allRecs = allRecords();
+    let importedCount = 0;
+
+    data.forEach(row => {
+      const dateMatch = String(row.time).match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+      if (!dateMatch) return;
+      const y = dateMatch[1]; const m = dateMatch[2].padStart(2, '0'); const d = dateMatch[3].padStart(2, '0');
+      const dateStr = `${y}-${m}-${d}`;
+      if (!allRecs[dateStr]) allRecs[dateStr] = [];
+
+      const exist = allRecs[dateStr].find(r => r.mealName === row.mealName && r.calories === Number(row.calories));
+      if (!exist) {
+        allRecs[dateStr].push({
+          id: Date.now() + importedCount,
+          type: row.type === '手動' ? 'manual' : 'ai',
+          image: null,
+          mealName: row.mealName || '未知餐點',
+          calories: Number(row.calories) || 0,
+          protein: Number(row.protein) || 0,
+          carbs: Number(row.carbs) || 0,
+          fat: Number(row.fat) || 0,
+          foods: [],
+          note: row.note || '',
+          time: String(row.time).split(' ').pop()
+        });
+        importedCount++;
+      }
+    });
+    saveRecords(allRecs); renderTodayList(); updateProgress();
+    alert(`✅ 雲端同步完成！成功抓取並匯入 ${importedCount} 筆新資料。`);
+  } catch (err) { alert('❌ 下載失敗，請檢查網址或網路連線：' + err.message); } 
+  finally { document.getElementById('loadingBox').style.display = 'none'; }
 }
 
 // ═══════════════════════════════════════════════
@@ -1478,73 +1308,6 @@ window.onload = function() {
   updateProgress();
   renderTodayList();
 };
-
-// 👇 這是剛剛第三步的程式碼，一定要貼在 </script> 的「上面」！
-// ═══════════════════════════════════════════════
-// ☁️ 從 Google 試算表同步資料
-// ═══════════════════════════════════════════════
-async function syncFromGoogleSheet() {
-  // 檢查是否已經設定好網址
-  if (typeof GOOGLE_SHEET_URL === 'undefined' || !GOOGLE_SHEET_URL.startsWith('http')) {
-    alert('⚠️ 找不到 Google 試算表網址，請確認程式碼中的 GOOGLE_SHEET_URL。');
-    return;
-  }
-
-  document.getElementById('loadingBox').style.display = 'block';
-  document.getElementById('loadingText').textContent = '正在從 Google 試算表下載資料…';
-
-  try {
-    const resp = await fetch(GOOGLE_SHEET_URL);
-    const data = await resp.json();
-    const allRecs = allRecords();
-    let importedCount = 0;
-
-    data.forEach(row => {
-      // 從試算表的時間字串中萃取出日期
-      const dateMatch = String(row.time).match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
-      if (!dateMatch) return;
-
-      const y = dateMatch[1];
-      const m = dateMatch[2].padStart(2, '0');
-      const d = dateMatch[3].padStart(2, '0');
-      const dateStr = `${y}-${m}-${d}`;
-
-      if (!allRecs[dateStr]) allRecs[dateStr] = [];
-
-      // 避免重複匯入
-      const exist = allRecs[dateStr].find(r => r.mealName === row.mealName && r.calories === Number(row.calories));
-      
-      if (!exist) {
-        allRecs[dateStr].push({
-          id: Date.now() + importedCount,
-          type: row.type === '手動' ? 'manual' : 'ai',
-          image: null,
-          mealName: row.mealName || '未知餐點',
-          calories: Number(row.calories) || 0,
-          protein: Number(row.protein) || 0,
-          carbs: Number(row.carbs) || 0,
-          fat: Number(row.fat) || 0,
-          foods: [],
-          note: row.note || '',
-          time: String(row.time).split(' ').pop()
-        });
-        importedCount++;
-      }
-    });
-
-    saveRecords(allRecs);
-    renderTodayList();
-    updateProgress();
-    
-    alert(`✅ 雲端同步完成！成功抓取並匯入 ${importedCount} 筆新資料。`);
-
-  } catch (err) {
-    alert('❌ 下載失敗，請檢查網址或網路連線：' + err.message);
-  } finally {
-    document.getElementById('loadingBox').style.display = 'none';
-  }
-}
-// 👆 程式碼結束
-</script> 
+</script>
 </body>
 </html>

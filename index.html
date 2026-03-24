@@ -519,8 +519,11 @@ function getAllApiKeys() {
 }
 
 function saveApiKey() {
-  const key1 = document.getElementById('apiKeyInput').value.trim();
-  const key2 = document.getElementById('apiKeyInput2').value.trim();
+  const raw1 = document.getElementById('apiKeyInput').value.trim();
+  const raw2 = document.getElementById('apiKeyInput2').value.trim();
+  // 若欄位顯示的是遮罩符號，代表沒有修改，保留原本的 Key
+  const key1 = raw1.includes('•') ? getApiKey()  : raw1;
+  const key2 = raw2.includes('•') ? getApiKey2() : raw2;
   if (!key1 || key1.length < 10) { setApiStatus('請輸入正確的主要 API Key', false); return; }
   localStorage.setItem('nl_gemini_key', key1);
   if (key2 && key2.length > 10) {
@@ -732,7 +735,7 @@ function clearImage() {
 // ═══════════════════════════════════════════════
 // Gemini API 呼叫（與可用版本完全相同的 prompt）
 // ═══════════════════════════════════════════════
-const MODELS = ['gemini-3-flash', 'gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'];
+const MODELS = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite-preview', 'gemini-2.5-flash'];
 
 async function callGemini(parts) {
   const keys = getAllApiKeys();
@@ -837,7 +840,8 @@ async function analyzeImage() {
   document.getElementById('previewBox').style.display = 'none';
   document.getElementById('resultCard').style.display = 'none';
   document.getElementById('loadingBox').style.display = 'block';
-  document.getElementById('loadingText').textContent = 'Gemini 正在辨識食物…';
+  const activeKeys = getAllApiKeys();
+    document.getElementById('loadingText').textContent = activeKeys.length >= 2 ? 'Gemini 正在辨識食物…（雙 Key 備援啟用）' : 'Gemini 正在辨識食物…';
   hideError();
   try {
     const extraHint = document.getElementById('extraHint')?.value?.trim() || '';
@@ -1453,7 +1457,10 @@ function friendlyErr(msg) {
   if (!msg) return '分析失敗，請重試';
   if (msg.includes('API_KEY_INVALID') || msg.includes('API key')) return 'API Key 無效，請至設定頁面重新確認';
   if (msg.includes('PERMISSION_DENIED')) return 'API Key 權限不足';
-  if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) return '今日免費額度已用完，明天再試';
+  if (msg === 'quota' || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
+    const k2 = getApiKey2();
+    return k2 ? '主要與備用 Key 今日額度均已用完，明天台灣時間下午3點後重置' : '今日免費額度已用完，可到設定頁面加入備用 Key，或明天台灣時間下午3點後重試';
+  }
   if (msg.includes('fetch') || msg.includes('Network')) return '網路連線失敗，請確認網路';
   if (msg.includes('設定')) return msg;
   return '分析失敗：' + msg;

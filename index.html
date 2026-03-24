@@ -222,7 +222,6 @@
     <button class="tab" onclick="switchTab('settings')">⚙️ 設定</button>
   </div>
 
-  <!-- ══════════ 今日記錄 ══════════ -->
   <div class="tab-content active" id="tab-record">
 
     <div class="daily-bar">
@@ -245,7 +244,6 @@
       <button class="btn btn-orange" style="flex:1" onclick="toggleSection('manual')">✏️ 手動輸入</button>
     </div>
 
-    <!-- 拍照區 -->
     <div class="upload-zone" id="uploadZone">
       <div class="upload-icon">📷</div>
       <div class="upload-title">拍照或上傳食物照片</div>
@@ -261,18 +259,15 @@
       <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this)">
     </div>
 
-    <!-- 手動輸入區 -->
     <div class="manual-box" id="manualBox">
       <div class="manual-title">✏️ 手動輸入食物</div>
       <div class="manual-hint">輸入食物名稱與份量，AI 自動查詢熱量與蛋白質。<br>若你已知數值，直接填入不需呼叫 AI。</div>
 
-      <!-- 常用食物快選 -->
       <div id="quickPickWrap" style="display:none;margin-bottom:10px">
         <div class="quick-label">📌 最近使用</div>
         <div id="quickPickList"></div>
       </div>
 
-      <!-- 食物名稱 + 數量 -->
       <div class="manual-row">
         <input class="input-field" type="text" id="manualFood" placeholder="食物名稱（例：豆漿）" oninput="onFoodInput()" autocomplete="off" style="flex:2">
         <input class="input-field" type="number" id="manualQty" placeholder="份量" min="0" style="flex:1">
@@ -288,7 +283,6 @@
         </select>
       </div>
 
-      <!-- 熱量 / 蛋白質 -->
       <div class="manual-row" style="margin-top:8px">
         <input class="input-field" type="number" id="manualCal" placeholder="熱量 kcal（選填）" min="0">
         <input class="input-field" type="number" id="manualProt" placeholder="蛋白質 g（選填）" min="0">
@@ -301,7 +295,6 @@
       <button class="manual-submit" onclick="submitManual()">新增 ✦</button>
     </div>
 
-    <!-- 圖片預覽 -->
     <div class="preview-box" id="previewBox">
       <img id="previewImg" class="preview-img" src="" alt="預覽">
       <div class="preview-footer">
@@ -310,17 +303,14 @@
       </div>
     </div>
 
-    <!-- 載入中 -->
     <div class="loading-box" id="loadingBox">
       <div class="spinner"></div>
       <div class="loading-text" id="loadingText">Gemini 正在辨識食物…</div>
       <div class="loading-sub">分析熱量與蛋白質中，請稍候</div>
     </div>
 
-    <!-- 分析結果 -->
     <div class="result-card" id="resultCard"></div>
 
-    <!-- 今日明細 -->
     <div id="todaySection">
       <div class="section-header">
         <div class="section-title">今日明細</div>
@@ -332,14 +322,12 @@
 
   </div>
 
-  <!-- ══════════ 歷史紀錄 ══════════ -->
   <div class="tab-content" id="tab-history">
     <div class="view-toggle">
       <button class="view-btn active" id="btnDay" onclick="setView('day')">📅 日檢視</button>
       <button class="view-btn" id="btnMonth" onclick="setView('month')">📆 月檢視</button>
     </div>
 
-    <!-- 日檢視 -->
     <div id="viewDay">
       <div class="date-nav-row">
         <button class="date-nav" onclick="shiftDay(-1)">‹</button>
@@ -350,7 +338,6 @@
       <div id="dayEntriesEl"></div>
     </div>
 
-    <!-- 月檢視 -->
     <div id="viewMonth" style="display:none">
       <div class="date-nav-row">
         <button class="date-nav" onclick="shiftMonth(-1)">‹</button>
@@ -363,7 +350,6 @@
     </div>
   </div>
 
-  <!-- ══════════ 設定 ══════════ -->
   <div class="tab-content" id="tab-settings">
 
     <div class="settings-section">
@@ -739,47 +725,49 @@ const MODELS = ['gemini-3-flash-preview', 'gemini-3.1-flash-lite-preview', 'gemi
 
 async function callGemini(parts) {
   const keys = getAllApiKeys();
-  if (!keys.length) throw new Error('請先在設定頁面輸入 Gemini API Key');
+  if (!keys.length) throw new Error('請先在「設定」頁面輸入 Gemini API Key');
+
+  let lastErr = '';
+  let quotaExhaustedKeys = 0;
 
   for (const apiKey of keys) {
     for (const model of MODELS) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       try {
-        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + apiKey;
         const resp = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            contents: [{ parts: parts }],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1500 }
+            contents: [{ parts }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
           })
         });
-
-        const data = await resp.json();
-
-        // API 錯誤
-        if (!resp.ok) {
-          const code = data?.error?.status || '';
-          const msg  = data?.error?.message || ('HTTP ' + resp.status);
-          if (code === 'RESOURCE_EXHAUSTED' || resp.status === 429) break; // 換下一個 key
-          continue; // 換下一個 model
+        if (resp.ok) {
+          const data = await resp.json();
+          if (!data.candidates?.length) throw new Error('未收到 AI 回應');
+          // 標記目前使用哪個 Key（1 或 2）
+          const keyIndex = keys.indexOf(apiKey) + 1;
+          if (keyIndex === 2) console.log('✅ 使用備用 Key 分析成功');
+          return data.candidates[0]?.content?.parts?.[0]?.text || '';
         }
-
-        // 安全過濾或空回應
-        const candidate = data?.candidates?.[0];
-        if (!candidate) continue;
-        if (candidate.finishReason === 'SAFETY') throw new Error('內容被安全過濾，請換一張照片');
-
-        const text = candidate?.content?.parts?.[0]?.text || '';
-        if (text) return text;
-
+        const ed = await resp.json().catch(() => ({}));
+        lastErr = ed.error?.message || `HTTP ${resp.status}`;
+        // 額度用完 → 跳到下一個 Key
+        if (lastErr.includes('quota') || lastErr.includes('RESOURCE_EXHAUSTED')) {
+          quotaExhaustedKeys++;
+          break; // 跳出 model 迴圈，換下一個 Key
+        }
       } catch(e) {
-        if (e.message.includes('安全過濾')) throw e;
-        // 網路錯誤繼續嘗試
-        continue;
+        lastErr = e.message;
       }
     }
   }
-  throw new Error('所有模型均無法回應，請確認網路與 API Key');
+
+  // 所有 Key 都額度用完
+  if (quotaExhaustedKeys >= keys.length) {
+    throw new Error('quota');
+  }
+  throw new Error(lastErr || '無法連接 Gemini API');
 }
 
 // Prompt 定義
@@ -808,32 +796,38 @@ const MANUAL_PROMPT = (food, prot, hint) => {
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
+// 這裡是你要求修改的地方：加強對 AI 碎碎念的過濾能力
 function parseJSON(raw) {
-  if (!raw || typeof raw !== 'string') return null;
+  if (!raw) return null;
+  
+  let s = raw.trim();
 
-  // 步驟1: 清理常見包裝
-  let s = raw
-    .replace(/^```json\s*/i, '')
-    .replace(/^```\s*/i, '')
-    .replace(/\s*```$/i, '')
-    .trim();
-
-  // 步驟2: 直接解析
-  try { return JSON.parse(s); } catch(e1) {}
-
-  // 步驟3: 找出 { ... } 範圍
+  // 1. 先試著找出 JSON 的邊界 { ... }，無視前後的廢話
   const start = s.indexOf('{');
-  const end   = s.lastIndexOf('}');
-  if (start !== -1 && end > start) {
-    const slice = s.slice(start, end + 1);
-    try { return JSON.parse(slice); } catch(e2) {}
-    // 步驟4: 修復尾部逗號
-    try {
-      const fixed = slice.replace(/,(\s*[}\]])/g, '$1');
-      return JSON.parse(fixed);
-    } catch(e3) {}
+  const end = s.lastIndexOf('}');
+
+  if (start === -1 || end === -1 || end <= start) {
+    console.error('找不到有效的數據格式');
+    return null;
   }
-  return null;
+
+  let jsonStr = s.slice(start, end + 1);
+
+  try {
+    // 2. 嘗試直接解析
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    try {
+      // 3. 如果失敗，修復常見的「多餘逗號」錯誤後再試一次
+      const fixedJson = jsonStr
+        .replace(/,\s*}/g, '}')
+        .replace(/,\s*]/g, ']');
+      return JSON.parse(fixedJson);
+    } catch (e2) {
+      console.error('AI 回傳內容格式錯誤，無法讀取', raw);
+      return null;
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════
@@ -945,7 +939,9 @@ async function submitManual() {
     const manualHint = document.getElementById('manualHint')?.value?.trim() || '';
     const raw = await callGemini([{ text: MANUAL_PROMPT(fullName, isNaN(prot) ? null : prot, manualHint) }]);
     const parsed = parseJSON(raw);
-    if (!parsed) throw new Error('解析失敗，AI 回傳：' + (raw ? raw.slice(0, 300) : '（空）'));
+    if (!parsed) {
+      throw new Error('無法解析 AI 回應｜原始：' + (raw || '空').slice(0, 200));
+    }
     const entry = makeEntry('manual', null, parsed);
     entry.mealName = fullName;
     if (!isNaN(cal))  entry.calories = cal;
@@ -1461,15 +1457,15 @@ function clearAllData() {
 // ═══════════════════════════════════════════════
 function friendlyErr(msg) {
   if (!msg) return '分析失敗，請重試';
-  if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) return 'API Key 無效，請至設定頁面重新確認';
+  if (msg.includes('API_KEY_INVALID') || msg.includes('API key')) return 'API Key 無效，請至設定頁面重新確認';
   if (msg.includes('PERMISSION_DENIED')) return 'API Key 權限不足';
-  if (msg === 'quota' || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('429')) {
+  if (msg === 'quota' || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
     const k2 = getApiKey2();
     return k2 ? '主要與備用 Key 今日額度均已用完，明天台灣時間下午3點後重置' : '今日免費額度已用完，可到設定頁面加入備用 Key，或明天台灣時間下午3點後重試';
   }
   if (msg.includes('fetch') || msg.includes('Network')) return '網路連線失敗，請確認網路';
-  // 直接顯示完整錯誤訊息方便除錯
-  return msg;
+  if (msg.includes('設定')) return msg;
+  return '分析失敗：' + msg;
 }
 function showError(msg) {
   const b = document.getElementById('errorBox');

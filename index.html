@@ -739,7 +739,8 @@ async function callGemini(parts) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts }],
-            generationConfig: { temperature: 0.1, maxOutputTokens: 1000 }
+            // 這裡是你要求修改的地方：加入 responseMimeType 強制 AI 輸出純 JSON 格式，並稍微提高 token 避免資料被截斷
+            generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: "application/json" }
           })
         });
         if (resp.ok) {

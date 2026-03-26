@@ -3,217 +3,239 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NutriLens 食物營養分析</title>
+<title>NutriLens v2.0 彩色營養生活</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  
   :root {
-    --bg: #0a0a0f; --card: #1a1a24; --border: #2a2a3a;
-    --accent: #7fff6e; --accent2: #6ee0ff; --accent3: #ffb86e;
-    --text: #f0f0f5; --muted: #7a7a9a; --danger: #ff6e6e;
+    --bg: #f8f9fa; /* 淺灰白背景 */
+    --card: #ffffff; /* 純白卡片 */
+    --border: #edf2f7; 
+    --accent: #4ECC94; /* 薄荷綠 (原主色) */
+    --accent2: #6BB5FF; /* 天空藍 (蛋白質) */
+    --accent3: #FFD23F; /* 太陽黃 (碳水) */
+    --primary: #FF6E8E; /* 草莓粉 (脂肪) */
+    --text: #2d3748; 
+    --muted: #718096; 
+    --danger: #fc8181;
   }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh;
-    background-image: radial-gradient(ellipse at 20% 0%, rgba(127,255,110,0.05) 0%, transparent 50%),
-                      radial-gradient(ellipse at 80% 100%, rgba(110,224,255,0.05) 0%, transparent 50%); }
+  
+  body { 
+    background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh;
+    background-image: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); 
+  }
   .app { max-width: 480px; margin: 0 auto; padding: 0 16px 80px; }
 
-  .header { padding: 24px 0 18px; text-align: center; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-  .logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 3px; }
-  .logo-dot { color: var(--accent); }
-  .logo-badge { display: inline-block; background: rgba(127,255,110,0.12); color: var(--accent); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; vertical-align: middle; }
-  .sub { color: var(--muted); font-size: 12px; }
+  .header { padding: 30px 0 20px; text-align: center; border-bottom: 2px dashed var(--border); margin-bottom: 20px; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 3px; color: var(--primary); text-shadow: 2px 2px 0px rgba(255,110,142,0.1); }
+  .logo-badge { display: inline-block; background: var(--accent3); color: #000; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-left: 8px; vertical-align: middle; }
+  .sub { color: var(--muted); font-size: 12px; font-weight: 500; }
 
   /* Tabs */
-  .tabs { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin-bottom: 20px; gap: 4px; }
-  .tab { flex: 1; padding: 10px 4px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
-  .tab.active { background: var(--bg); color: var(--text); }
+  .tabs { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 4px; margin-bottom: 20px; gap: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+  .tab { flex: 1; padding: 10px 4px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; text-align: center; }
+  .tab.active { background: var(--bg); color: var(--text); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
   .tab-content { display: none; }
   .tab-content.active { display: block; }
 
   /* Daily bar */
-  .daily-bar { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 16px; display: flex; gap: 16px; }
+  .daily-bar { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 16px; display: flex; gap: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
   .stat-col { flex: 1; }
-  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-  .stat-value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
-  .stat-value span { font-size: 12px; font-weight: 400; color: var(--muted); }
-  .stat-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-  .stat-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+  .stat-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: var(--text); }
+  .stat-value span { font-size: 13px; font-weight: 500; color: var(--muted); }
+  .stat-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+  .stat-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
   .fill-green { background: var(--accent); }
   .fill-blue { background: var(--accent2); }
 
-  .error-box { background: rgba(255,110,110,0.08); border: 1px solid rgba(255,110,110,0.2); border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--danger); margin-bottom: 16px; display: none; line-height: 1.7; }
+  .error-box { background: rgba(252,129,129,0.1); border: 1px solid rgba(252,129,129,0.3); border-radius: 12px; padding: 14px 16px; font-size: 13px; font-weight: 500; color: var(--danger); margin-bottom: 16px; display: none; line-height: 1.7; }
 
   /* Action buttons */
   .action-row { display: flex; gap: 8px; margin-bottom: 16px; }
-  .btn { padding: 12px 20px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; }
-  .btn:active { opacity: 0.8; }
-  .btn-primary { background: var(--accent); color: #0a0a0f; }
-  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
-  .btn-orange { background: var(--accent3); color: #0a0a0f; }
-  .btn-sm { font-size: 11px; padding: 6px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  .btn { padding: 14px 20px; border-radius: 14px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: opacity 0.15s; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .btn:active { opacity: 0.8; transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-outline { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .btn-orange { background: var(--accent3); color: #000; }
+  .btn-sm { font-size: 11px; padding: 6px 12px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 600; }
   input[type="file"] { display: none; }
 
   /* Upload zone */
-  .upload-zone { background: var(--card); border: 2px dashed var(--border); border-radius: 20px; padding: 32px 20px; text-align: center; margin-bottom: 16px; display: none; }
+  .upload-zone { background: var(--card); border: 2px dashed var(--accent2); border-radius: 20px; padding: 32px 20px; text-align: center; margin-bottom: 16px; display: none; }
   .upload-icon { font-size: 36px; margin-bottom: 10px; }
-  .upload-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+  .upload-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 5px; color: var(--text); }
   .upload-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
   .upload-actions { display: flex; gap: 10px; justify-content: center; }
 
   /* Manual box */
-  .manual-box { background: var(--card); border: 1px solid var(--accent3); border-radius: 20px; padding: 20px; margin-bottom: 16px; display: none; }
+  .manual-box { background: var(--card); border: 1px solid var(--accent3); border-radius: 20px; padding: 20px; margin-bottom: 16px; display: none; box-shadow: 0 8px 20px rgba(255,210,63,0.1); }
   .manual-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
   .manual-hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; line-height: 1.7; }
-  .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; }
-  .input-field:focus { border-color: var(--accent); }
+  .input-field { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; margin-bottom: 10px; font-weight: 500; }
+  .input-field:focus { border-color: var(--accent); background: #fff; }
   .manual-row { display: flex; gap: 8px; }
   .manual-row .input-field { margin-bottom: 0; }
-  .manual-row-wrap { margin-bottom: 10px; }
-  .manual-submit { width: 100%; background: var(--accent3); color: #0a0a0f; border: none; border-radius: 12px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 4px; }
+  .manual-submit { width: 100%; background: var(--accent3); color: #000; border: none; border-radius: 12px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 4px; box-shadow: 0 4px 10px rgba(255,210,63,0.2); }
   .manual-submit:active { opacity: 0.8; }
+  
+  /* Quick Pick */
+  .quick-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+  .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .quick-chip { background: rgba(255,210,63,0.15); border: 1px solid rgba(255,210,63,0.3); color: #b78a00; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .quick-chip:active { opacity: 0.7; }
 
   /* Preview */
-  .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 16px; display: none; }
+  .preview-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 16px; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
   .preview-img { width: 100%; max-height: 260px; object-fit: cover; display: block; }
   .preview-footer { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; }
-  .analyze-btn { background: var(--accent); color: #0a0a0f; border: none; border-radius: 12px; padding: 13px 26px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; }
+  .analyze-btn { background: var(--primary); color: #fff; border: none; border-radius: 12px; padding: 13px 26px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(255,110,142,0.3); }
   .analyze-btn:active { opacity: 0.8; }
 
   /* Loading */
-  .loading-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 16px; display: none; }
+  .loading-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 16px; display: none; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
   .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .loading-text { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
   .loading-sub { font-size: 13px; color: var(--muted); }
 
-  /* Result card */
-  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 16px; display: none; animation: fadeUp 0.4s ease; }
+  /* Result card & Charts */
+  .result-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 16px; display: none; animation: fadeUp 0.4s ease; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-  .result-header { padding: 14px 20px; background: rgba(127,255,110,0.07); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-  .result-header.manual { background: rgba(255,184,110,0.07); }
-  .result-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; flex: 1; }
-  .result-time { font-size: 11px; color: var(--muted); }
-  .result-macros { display: flex; border-bottom: 1px solid var(--border); }
+  .result-header { padding: 16px 20px; background: rgba(78,204,148,0.1); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  .result-header.manual { background: rgba(255,210,63,0.1); }
+  .result-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; flex: 1; color: var(--text); }
+  .result-time { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .result-macros { display: flex; border-bottom: 1px solid var(--border); background: #fff; }
   .macro-item { flex: 1; padding: 16px; text-align: center; border-right: 1px solid var(--border); }
   .macro-item:last-child { border-right: none; }
   .macro-val { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 3px; }
-  .macro-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-  .food-list { padding: 14px 20px; }
-  .food-list-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; }
-  .food-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(42,42,58,0.5); font-size: 14px; }
+  .macro-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  
+  .macro-chart-box { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 20px; margin: 10px 20px; background: var(--bg); border-radius: 16px; }
+  .pie-chart { width: 75px; height: 75px; border-radius: 50%; background: conic-gradient( var(--accent2) 0% var(--p-p), var(--accent3) var(--p-p) var(--p-c), var(--primary) var(--p-c) 100% ); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+  .chart-legend { display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { font-size: 12px; display: flex; align-items: center; gap: 8px; color: var(--text); font-weight: 600;}
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .dga-warning { background: rgba(252,129,129,0.1); color: var(--danger); font-size: 12px; padding: 12px 16px; border-radius: 12px; margin: 0 20px 14px; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5; font-weight: 600; border: 1px solid rgba(252,129,129,0.2); }
+  
+  .food-list { padding: 14px 20px; background: #fff; }
+  .food-list-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .food-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 14px; font-weight: 500; }
   .food-item:last-child { border-bottom: none; }
   .food-badges { display: flex; gap: 6px; flex-shrink: 0; margin-left: 8px; }
-  .badge { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-  .badge-cal { background: rgba(127,255,110,0.12); color: var(--accent); }
-  .badge-prot { background: rgba(110,224,255,0.12); color: var(--accent2); }
-  .result-note { padding: 12px 20px; background: rgba(42,42,58,0.4); font-size: 13px; color: var(--muted); line-height: 1.6; border-top: 1px solid var(--border); }
+  .badge { padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  
+  .result-note { padding: 14px 20px; background: rgba(107,181,255,0.08); font-size: 13px; font-weight: 500; color: #3182ce; line-height: 1.6; border-top: 1px solid var(--border); }
+
+  /* 血糖影響 */
+  .glucose-bar { margin: 0 20px 16px; background: var(--bg); padding: 14px; border-radius: 16px; }
+  .glucose-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .glucose-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+  .glucose-tag { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .glucose-low  { background: rgba(78,204,148,0.15); color: var(--accent); }
+  .glucose-med  { background: rgba(255,210,63,0.2); color: #d4a71b; }
+  .glucose-high { background: rgba(252,129,129,0.15); color: var(--danger); }
+  .glucose-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .glucose-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .glucose-note { font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 8px; line-height: 1.5; }
 
   /* Today list */
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; margin-top: 6px; }
-  .section-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); }
-  .today-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .today-thumb { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; }
-  .today-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; margin-top: 10px; }
+  .section-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text); }
+  .today-item { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+  .today-thumb { width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 20px; overflow: hidden; border: 1px solid var(--border); }
+  .today-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
   .today-info { flex: 1; min-width: 0; }
-  .today-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .today-time { font-size: 11px; color: var(--muted); }
+  .today-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+  .today-time { font-size: 11px; font-weight: 500; color: var(--muted); }
   .today-nums { text-align: right; flex-shrink: 0; }
-  .today-cal { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--accent); }
-  .today-prot { font-size: 11px; color: var(--accent2); }
-  .today-del { background: transparent; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 4px 6px; }
-  .type-badge { font-size: 10px; padding: 1px 6px; border-radius: 8px; font-weight: 600; margin-left: 5px; }
-  .type-ai { background: rgba(127,255,110,0.12); color: var(--accent); }
-  .type-manual { background: rgba(255,184,110,0.12); color: var(--accent3); }
+  .today-cal { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--accent); }
+  .today-prot { font-size: 11px; font-weight: 600; color: var(--accent2); margin-top: 2px; }
+  .today-del { background: transparent; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px 6px; transition: color 0.2s; }
+  .today-del:hover { color: var(--danger); }
+  .type-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+  .type-ai { background: rgba(78,204,148,0.15); color: var(--accent); }
+  .type-manual { background: rgba(255,210,63,0.2); color: #d4a71b; }
 
-  /* History */
-  .view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 3px; margin-bottom: 16px; }
-  .view-btn { flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; }
-  .view-btn.active { background: var(--bg); color: var(--text); }
-  .date-nav-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .date-nav { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; font-size: 18px; cursor: pointer; color: var(--text); border: none; background: var(--card); }
+  /* History & Summary */
+  .view-toggle { display: flex; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 4px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+  .view-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .view-btn.active { background: var(--bg); color: var(--text); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); }
+  .date-nav-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .date-nav { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 8px 16px; font-size: 18px; font-weight: bold; cursor: pointer; color: var(--text); box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
   .date-nav:active { opacity: 0.7; }
-  .date-label { flex: 1; text-align: center; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
-  .summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 14px; }
-  .summary-top { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .date-label { flex: 1; text-align: center; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; color: var(--text); }
+  .summary-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+  .summary-top { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
   .summary-macros { display: flex; }
   .summary-macro { flex: 1; text-align: center; padding: 0 4px; border-right: 1px solid var(--border); }
   .summary-macro:last-child { border-right: none; }
-  .summary-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 2px; }
-  .summary-lbl { font-size: 11px; color: var(--muted); }
-  .hist-item { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 11px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  .hist-thumb { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; }
-  .hist-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+  .summary-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .summary-lbl { font-size: 11px; font-weight: 600; color: var(--muted); }
+  
+  .hist-item { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+  .hist-thumb { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; border: 1px solid var(--border); }
+  .hist-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; }
   .hist-info { flex: 1; min-width: 0; }
-  .hist-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .hist-time { font-size: 11px; color: var(--muted); }
+  .hist-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+  .hist-time { font-size: 11px; font-weight: 500; color: var(--muted); }
   .hist-nums { text-align: right; flex-shrink: 0; }
-  .hist-cal { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); }
-  .hist-prot { font-size: 11px; color: var(--accent2); }
-  .month-chart { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px 20px; margin-bottom: 14px; }
-  .chart-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-  .chart-area { display: flex; align-items: flex-end; gap: 2px; height: 80px; }
-  .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
-  .chart-bar { width: 100%; border-radius: 3px 3px 0 0; background: rgba(127,255,110,0.45); min-height: 2px; transition: height 0.4s ease; }
-  .chart-lbl { font-size: 8px; color: var(--muted); }
+  .hist-cal { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800; color: var(--accent); }
+  .hist-prot { font-size: 11px; font-weight: 600; color: var(--accent2); margin-top: 2px; }
+  
+  .month-chart { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+  .chart-title { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .chart-area { display: flex; align-items: flex-end; gap: 3px; height: 90px; }
+  .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .chart-bar { width: 100%; border-radius: 4px 4px 0 0; background: rgba(78,204,148,0.5); min-height: 2px; transition: height 0.4s ease; }
+  .chart-bar:hover { background: var(--accent); }
+  .chart-lbl { font-size: 9px; font-weight: 600; color: var(--muted); }
   .clickable { cursor: pointer; }
-  .clickable:active { opacity: 0.7; }
+  .clickable:active { opacity: 0.7; transform: scale(0.98); }
 
   /* Settings */
-  .settings-section { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
-  .settings-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
-  .settings-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-  .settings-row { margin-bottom: 12px; }
-  .save-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 4px; }
+  .settings-section { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 22px; margin-bottom: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+  .settings-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; margin-bottom: 14px; color: var(--text); }
+  .settings-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .settings-row { margin-bottom: 14px; }
+  .save-btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 14px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 6px; box-shadow: 0 4px 10px rgba(78,204,148,0.3); }
   .save-btn:active { opacity: 0.8; }
-  .danger-btn { width: 100%; background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 10px; padding: 12px; font-family: 'DM Sans', sans-serif; font-size: 13px; cursor: pointer; margin-top: 8px; }
-  .api-steps { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; }
-  .api-steps p { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; }
-  .api-steps ol { padding-left: 16px; }
-  .api-steps li { font-size: 13px; color: var(--text); margin-bottom: 5px; line-height: 1.6; }
-  .api-steps a { color: var(--accent2); }
-  .api-status { font-size: 12px; margin-top: 8px; text-align: center; }
+  .danger-btn { width: 100%; background: var(--card); color: var(--danger); border: 1px solid var(--danger); border-radius: 12px; padding: 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+  .api-steps { background: rgba(107,181,255,0.08); border: 1px solid rgba(107,181,255,0.2); border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+  .api-steps p { font-size: 11px; color: #3182ce; margin-bottom: 8px; font-weight: 800; text-transform: uppercase; }
+  .api-steps ol { padding-left: 18px; }
+  .api-steps li { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.6; }
+  .api-steps a { color: var(--accent2); font-weight: 600; text-decoration: none; }
+  .api-status { font-size: 13px; font-weight: 600; margin-top: 10px; text-align: center; }
   .btn-row { display: flex; gap: 8px; }
-  .btn-row .save-btn { margin-top: 0; }
-  .clear-btn { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+  .btn-row .save-btn { margin-top: 0; box-shadow: none; }
+  .clear-btn { background: var(--bg); color: var(--muted); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
 
-  .empty-state { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 2.4; }
-
-  /* 血糖影響 */
-  .glucose-bar { margin: 0 20px 14px; }
-  .glucose-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-  .glucose-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-  .glucose-tag { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px; }
-  .glucose-low  { background: rgba(127,255,110,0.15); color: var(--accent); }
-  .glucose-med  { background: rgba(255,184,110,0.15); color: var(--accent3); }
-  .glucose-high { background: rgba(255,110,110,0.15); color: var(--danger); }
-  .glucose-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .glucose-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-  .glucose-note { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; font-weight: 500; line-height: 2.2; }
 
   /* BMR 計算器 */
-  .bmr-result { background: rgba(127,255,110,0.05); border: 1px solid rgba(127,255,110,0.15); border-radius: 12px; padding: 14px 16px; margin-top: 14px; display: none; }
-  .bmr-result-title { font-size: 12px; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
-  .bmr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .bmr-item { background: var(--bg); border-radius: 10px; padding: 10px 12px; text-align: center; }
-  .bmr-val { font-family: Syne, sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 2px; }
-  .bmr-lbl { font-size: 11px; color: var(--muted); }
-  .bmr-note { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.6; }
-  .activity-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-  .act-btn { padding: 7px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: DM Sans, sans-serif; transition: all 0.15s; }
-  .act-btn.active { background: var(--accent); color: #0a0a0f; border-color: var(--accent); font-weight: 700; }
-  .apply-btn { width: 100%; background: var(--accent); color: #0a0a0f; border: none; border-radius: 10px; padding: 11px; font-family: Syne, sans-serif; font-size: 13px; font-weight: 800; cursor: pointer; margin-top: 10px; }
-  .quick-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
-  .quick-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  .quick-chip { background: rgba(255,184,110,0.1); border: 1px solid rgba(255,184,110,0.25); color: var(--accent3); border-radius: 20px; padding: 5px 12px; font-size: 12px; cursor: pointer; white-space: nowrap; }
-  .quick-chip:active { opacity: 0.7; }
+  .bmr-result { background: rgba(78,204,148,0.08); border: 1px solid rgba(78,204,148,0.2); border-radius: 16px; padding: 16px; margin-top: 16px; display: none; }
+  .bmr-result-title { font-size: 12px; color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
+  .bmr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bmr-item { background: #fff; border-radius: 12px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+  .bmr-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .bmr-lbl { font-size: 11px; font-weight: 600; color: var(--muted); }
+  .bmr-note { font-size: 12px; font-weight: 500; color: var(--muted); margin-top: 12px; line-height: 1.6; }
+  .activity-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .act-btn { padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border); background: var(--bg); color: var(--muted); font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+  .act-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; box-shadow: 0 2px 8px rgba(78,204,148,0.3); }
+  .apply-btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px; padding: 13px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800; cursor: pointer; margin-top: 12px; box-shadow: 0 4px 10px rgba(78,204,148,0.3); }
 </style>
 </head>
 <body>
 <div class="app">
 
   <div class="header">
-    <div class="logo">🥗 NutriLens<span class="logo-dot">.</span><span class="logo-badge">免費</span></div>
-    <div class="sub">拍照即知熱量與蛋白質　by Gemini AI</div>
+    <div class="logo">🥗 NutriLens<span class="logo-dot">.</span><span class="logo-badge">v2.0</span></div>
+    <div class="sub">拍照即知熱量與營養　by Gemini AI</div>
   </div>
 
   <div class="tabs">
@@ -249,8 +271,8 @@
       <div class="upload-title">拍照或上傳食物照片</div>
       <div class="upload-sub">照片越清晰、光線越好，辨識越準確</div>
       <input class="input-field" type="text" id="extraHint"
-        placeholder="💬 補充說明（選填）：例如「素食便當」、「麵腸不是大腸」"
-        style="margin-bottom:12px;font-size:13px;text-align:left;">
+        placeholder="💬 補充說明（選填）：例如「素食便當」、「無糖」"
+        style="margin-bottom:14px;font-size:13px;text-align:left;">
       <div class="upload-actions">
         <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">📸 拍照</button>
         <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">🖼 選圖片</button>
@@ -261,9 +283,9 @@
 
     <div class="manual-box" id="manualBox">
       <div class="manual-title">✏️ 手動輸入食物</div>
-      <div class="manual-hint">輸入食物名稱與份量，AI 自動查詢熱量與蛋白質。<br>若你已知數值，直接填入不需呼叫 AI。</div>
+      <div class="manual-hint">輸入食物名稱與份量，AI 自動查詢熱量與營養素。<br>若你已知數值，直接填入不需呼叫 AI。</div>
 
-      <div id="quickPickWrap" style="display:none;margin-bottom:10px">
+      <div id="quickPickWrap" style="display:none;margin-bottom:12px">
         <div class="quick-label">📌 最近使用</div>
         <div id="quickPickList"></div>
       </div>
@@ -284,12 +306,12 @@
       </div>
 
       <div class="manual-row" style="margin-top:8px">
-        <input class="input-field" type="number" id="manualCal" placeholder="熱量 kcal（選填）" min="0">
-        <input class="input-field" type="number" id="manualProt" placeholder="蛋白質 g（選填）" min="0">
+        <input class="input-field" type="number" id="manualCal" placeholder="熱量 kcal" min="0">
+        <input class="input-field" type="number" id="manualProt" placeholder="蛋白質 g" min="0">
       </div>
 
       <input class="input-field" type="text" id="manualHint"
-        placeholder="💬 補充說明（選填）：例如「無糖」、「豆漿非牛奶」"
+        placeholder="💬 補充說明（選填）：例如「無糖」、「非油炸」"
         style="margin-top:8px;margin-bottom:0;font-size:13px;">
 
       <button class="manual-submit" onclick="submitManual()">新增 ✦</button>
@@ -306,7 +328,7 @@
     <div class="loading-box" id="loadingBox">
       <div class="spinner"></div>
       <div class="loading-text" id="loadingText">Gemini 正在辨識食物…</div>
-      <div class="loading-sub">分析熱量與蛋白質中，請稍候</div>
+      <div class="loading-sub">分析營養素與 DGA 準則中，請稍候</div>
     </div>
 
     <div class="result-card" id="resultCard"></div>
@@ -364,22 +386,22 @@
         </ol>
       </div>
 
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px">主要 Key（優先使用）</div>
+      <div class="settings-label">主要 Key（優先使用）</div>
       <input class="input-field" type="password" id="apiKeyInput" placeholder="AIzaSy..." autocomplete="off">
 
-      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;margin-top:4px">備用 Key（主要額度用完自動切換）</div>
+      <div class="settings-label" style="margin-top:8px">備用 Key（主要額度用完自動切換）</div>
       <input class="input-field" type="password" id="apiKeyInput2" placeholder="AIzaSy...（選填）" autocomplete="off">
 
-      <div class="btn-row" style="margin-top:8px">
-        <button class="save-btn" onclick="saveApiKey()">儲存</button>
-        <button class="clear-btn" onclick="clearApiKey()">清除</button>
+      <div class="btn-row" style="margin-top:10px">
+        <button class="save-btn" style="flex:2" onclick="saveApiKey()">儲存</button>
+        <button class="clear-btn" style="flex:1" onclick="clearApiKey()">清除</button>
       </div>
       <div class="api-status" id="apiStatus"></div>
     </div>
 
     <div class="settings-section">
       <div class="settings-title">🧮 身體數據與每日目標</div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div style="display:flex;gap:10px;margin-bottom:10px">
         <div style="flex:1">
           <div class="settings-label">性別</div>
           <select class="input-field" id="bodyGender" style="padding:10px 8px">
@@ -392,7 +414,7 @@
           <input class="input-field" type="number" id="bodyAge" placeholder="30" min="10" max="100">
         </div>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:10px">
+      <div style="display:flex;gap:10px;margin-bottom:12px">
         <div style="flex:1">
           <div class="settings-label">身高（cm）</div>
           <input class="input-field" type="number" id="bodyHeight" placeholder="170" min="100" max="250">
@@ -403,7 +425,7 @@
         </div>
       </div>
 
-      <div class="settings-label" style="margin-bottom:6px">活動程度</div>
+      <div class="settings-label" style="margin-bottom:8px">活動程度</div>
       <div class="activity-row">
         <button class="act-btn active" id="act-1" onclick="setActivity(1.2,'act-1')">久坐</button>
         <button class="act-btn" id="act-2" onclick="setActivity(1.375,'act-2')">輕度運動</button>
@@ -421,7 +443,7 @@
             <div class="bmr-lbl">BMI</div>
           </div>
           <div class="bmr-item">
-            <div class="bmr-val" id="bmrBMR" style="color:var(--muted)">—</div>
+            <div class="bmr-val" id="bmrBMR" style="color:var(--text)">—</div>
             <div class="bmr-lbl">基礎代謝（kcal）</div>
           </div>
           <div class="bmr-item">
@@ -437,8 +459,8 @@
         <button class="apply-btn" onclick="applyBMR()">套用為每日目標 →</button>
       </div>
 
-      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
-        <div class="settings-title" style="font-size:14px;margin-bottom:10px">手動設定目標</div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px dashed var(--border)">
+        <div class="settings-title" style="font-size:15px;margin-bottom:12px">手動設定目標</div>
         <div class="settings-row">
           <div class="settings-label">每日熱量目標（kcal）</div>
           <input class="input-field" type="number" id="goalCal" placeholder="2000">
@@ -447,15 +469,15 @@
           <div class="settings-label">每日蛋白質目標（g）</div>
           <input class="input-field" type="number" id="goalProt" placeholder="130">
         </div>
-        <button class="save-btn" onclick="saveGoals()">儲存目標</button>
+        <button class="save-btn" style="background:var(--accent3);color:#000;box-shadow: 0 4px 10px rgba(255,210,63,0.3);" onclick="saveGoals()">儲存目標</button>
       </div>
     </div>
 
     <div class="settings-section">
       <div class="settings-title">🗃️ 資料管理</div>
-      <button class="save-btn" style="background:#6ee0ff;color:#0a0a0f;margin-bottom:8px" onclick="syncFromGoogleSheet()">☁️ 從 Google 試算表同步資料</button>
-      <button class="save-btn" onclick="exportData()">📤 匯出本機備份</button>
-      <button class="save-btn" style="background:transparent;color:var(--text);border:1px solid var(--border);margin-top:8px" onclick="showImportModal()">📥 匯入本機備份</button>
+      <button class="save-btn" style="background:var(--accent2);color:#fff;margin-bottom:10px;box-shadow:0 4px 10px rgba(107,181,255,0.3);" onclick="syncFromGoogleSheet()">☁️ 從 Google 試算表同步資料</button>
+      <button class="save-btn" style="background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:none;" onclick="exportData()">📤 匯出本機備份</button>
+      <button class="save-btn" style="background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:none;margin-top:10px" onclick="showImportModal()">📥 匯入本機備份</button>
       <button class="danger-btn" onclick="clearAllData()">⚠️ 清除所有紀錄</button>
     </div>
 
@@ -463,8 +485,8 @@
 </div>
 
 <script>
-// ⚠️ 貼上你的 Google 試算表 Web App 網址 ⚠️
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzL2fdiAPqfSenWmNpgb6ue2YRtL2JlHamzGseP8iHS-DGxxnvtmccRzK2V4494ouQF4A/exec'; 
+// ⚠️ 若有 Google 試算表 Web App 網址請貼在此 ⚠️
+const GOOGLE_SHEET_URL = ''; 
 
 // ═══════════════════════════════════════════════
 // 狀態與工具
@@ -684,7 +706,7 @@ function clearImage() {
 }
 
 // ═══════════════════════════════════════════════
-// Gemini API 呼叫與設定
+// Gemini API 呼叫與設定 (支援 DGA 2025-2030)
 // ═══════════════════════════════════════════════
 const MODELS = ['gemini-2.5-flash', 'gemini-3-flash-preview'];
 
@@ -734,28 +756,27 @@ async function callGemini(parts) {
   throw new Error(lastErr || '無法連接 Gemini API');
 }
 
-const JSON_SCHEMA = '{"isFood":true,"mealName":"餐點名稱","totalCalories":650,"totalCarbs":85,"totalProtein":25,"totalFat":18,"confidence":90,"glucoseScore":72,"glucoseLevel":"high","glucoseNote":"白飯GI值高血糖衝擊大","foods":[{"name":"白飯","amount":"200g","calories":260,"carbs":57,"protein":5,"fat":0}],"note":"建議減少白飯份量增加蔬菜"}';
+// v2.0 更新的 JSON Schema (支援飽和脂肪、鈉、糖與 DGA 警示)
+const JSON_SCHEMA = '{"isFood":true,"mealName":"餐點名稱","totalCalories":650,"totalCarbs":85,"totalProtein":25,"totalFat":18,"saturatedFat":5,"sodium":800,"addedSugar":10,"confidence":90,"glucoseScore":72,"glucoseLevel":"high","glucoseNote":"白飯GI值高血糖衝擊大","dgaWarning":"鈉含量偏高(800mg)，建議多搭配水分與鉀質攝取","foods":[{"name":"白飯","amount":"200g","calories":260,"carbs":57,"protein":5,"fat":0}],"note":"建議減少白飯份量增加蔬菜"}';
 
 const FOOD_PROMPT = (extra) => {
   const extraLine = extra ? '使用者補充說明：' + extra + '（請優先依此修正辨識）。' : '';
-  return '你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。' +
-    '請分析這張食物照片。' + extraLine +
+  return '你是擁有20年經驗的專業營養師。請分析照片中的食物，並嚴格遵循「2025–2030 美國飲食指南 (DGA)」標準。' + extraLine +
     '分析要點：' +
-    '1.辨識所有食物包含主食配菜湯品醬料，照片中沒有食物則isFood設false。' +
-    '2.台式素食警示：麵腸麵筋烤麩素雞滷製後類似大腸滷肉，請依表面紋理判斷，無動物脂肪特徵優先判為豆製品。' +
-    '3.份量：飯碗八分滿約160g，便當飯約200g，半格約100g，勿高估。' +
-    '4.血糖：依GI值、碳水量、纖維比例評估。glucoseScore 0到100，high大於70，medium 40到70，low小於40。' +
-    '5.烹調熱量：油炸最高、煎炒次之、蒸煮最低。' +
+    '1.辨識所有食物包含主食、配菜、醬料。沒有食物則isFood設false。' +
+    '2.DGA標準評估：特別計算飽和脂肪(saturatedFat)、鈉(sodium)與添加糖(addedSugar)。若飽和脂肪>熱量10%、鈉>800mg/餐、或添加糖過高，請在 dgaWarning 欄位給出具體警示，若無則填空字串。' +
+    '3.份量：飯碗八分滿約160g，便當飯約200g，勿高估。' +
+    '4.血糖：glucoseScore 0-100，high>70，medium 40-70，low<40。' +
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
 const MANUAL_PROMPT = (food, prot, hint) => {
   const protLine = prot ? '蛋白質已知' + prot + 'g。' : '';
   const hintLine = hint ? '補充說明：' + hint + '（請優先依此修正）。' : '';
-  return '你是擁有20年經驗的台灣專業營養師，具備糖尿病衛教師資格，專精飲食分析與血糖控制。' +
-    '請估算「' + food + '」的營養。' + protLine + hintLine +
-    '以台灣食物資料庫為基準依實際份量計算。' +
-    'glucoseScore 0到100，high大於70，medium 40到70，low小於40。' +
+  return '你是擁有20年經驗的專業營養師。請估算「' + food + '」的營養，並嚴格遵循「2025–2030 美國飲食指南 (DGA)」標準。' + protLine + hintLine +
+    '分析要點：' +
+    '1.計算飽和脂肪、鈉與添加糖。若飽和脂肪>熱量10%、鈉>800mg/餐、或添加糖過高，請在 dgaWarning 欄位給出具體警示。' +
+    '2.血糖：glucoseScore 0-100，high>70，medium 40-70，low<40。' +
     '只輸出JSON不加任何說明，格式如下：' + JSON_SCHEMA;
 };
 
@@ -851,7 +872,7 @@ async function submitManual() {
       id: Date.now(), type: 'manual', image: null,
       mealName: fullName, calories: cal, protein: prot, carbs: 0, fat: 0,
       foods: [{ name: fullName, calories: cal, carbs: 0, protein: prot, fat: 0 }],
-      note: '', time: fmtTime()
+      note: '', dgaWarning: '', time: fmtTime()
     };
     finishEntry(entry); clearManualForm(); return;
   }
@@ -900,6 +921,7 @@ function makeEntry(type, image, parsed) {
     glucoseScore: parsed.glucoseScore !== undefined ? Number(parsed.glucoseScore) : undefined,
     glucoseLevel: parsed.glucoseLevel || undefined,
     glucoseNote:  parsed.glucoseNote  || undefined,
+    dgaWarning:   parsed.dgaWarning   || '', // 新增 DGA 警示
     foods: Array.isArray(parsed.foods) ? parsed.foods : [],
     note: parsed.note || '', time: fmtTime()
   };
@@ -926,40 +948,29 @@ function finishEntry(entry) {
 // 渲染
 // ═══════════════════════════════════════════════
 function renderResult(entry) {
+  // 1. 食材明細
   const foods = entry.foods.map(f =>
     `<div class="food-item">
        <div>
-         <div>${f.name}</div>
-         ${f.amount ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">📐 ${f.amount}</div>` : ''}
+         <div style="color:var(--text);font-weight:700;">${f.name}</div>
+         ${f.amount ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">📐 ${f.amount}</div>` : ''}
        </div>
        <div class="food-badges">
-         <span class="badge badge-cal">${f.calories} kcal</span>
-         <span class="badge badge-prot">${f.protein}g 蛋白</span>
-         ${f.carbs ? `<span class="badge" style="background:rgba(255,184,110,0.12);color:#ffb86e">${f.carbs}g 碳水</span>` : ''}
-         ${f.fat   ? `<span class="badge" style="background:rgba(255,158,181,0.12);color:#ff9eb5">${f.fat}g 脂肪</span>` : ''}
+         <span class="badge" style="background:rgba(78, 204, 148, 0.15);color:var(--accent)">${f.calories} kcal</span>
+         <span class="badge" style="background:rgba(107, 181, 255, 0.15);color:var(--accent2)">${f.protein}g 蛋白</span>
+         ${f.carbs ? `<span class="badge" style="background:rgba(255, 210, 63, 0.2);color:#d4a71b">${f.carbs}g 碳水</span>` : ''}
+         ${f.fat   ? `<span class="badge" style="background:rgba(255, 110, 142, 0.15);color:var(--primary)">${f.fat}g 脂肪</span>` : ''}
        </div>
      </div>`).join('');
 
   const isManual = entry.type === 'manual';
-  const conf = entry.confidence; let confHtml = '';
-  if (conf !== undefined && !isManual) {
-    const confColor = conf >= 80 ? 'var(--accent)' : conf >= 60 ? 'var(--accent3)' : 'var(--danger)';
-    const confLabel = conf >= 80 ? '高' : conf >= 60 ? '中' : '低';
-    confHtml = `
-      <div style="padding:10px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
-        <div style="font-size:11px;color:var(--muted)">辨識信心度</div>
-        <div style="flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden">
-          <div style="height:100%;width:${conf}%;background:${confColor};border-radius:2px;transition:width 0.6s ease"></div>
-        </div>
-        <div style="font-size:11px;font-weight:700;color:${confColor}">${confLabel} ${conf}%</div>
-      </div>`;
-  }
 
+  // 2. 血糖標籤
   let glucoseHtml = '';
   if (entry.glucoseScore !== undefined) {
     const gs = entry.glucoseScore;
     const gl = entry.glucoseLevel || (gs >= 70 ? 'high' : gs >= 40 ? 'medium' : 'low');
-    const gColor = gl === 'high' ? 'var(--danger)' : gl === 'medium' ? 'var(--accent3)' : 'var(--accent)';
+    const gColor = gl === 'high' ? 'var(--danger)' : gl === 'medium' ? '#d4a71b' : 'var(--accent)';
     const gLabel = gl === 'high' ? '血糖衝擊高' : gl === 'medium' ? '血糖衝擊中' : '血糖衝擊低';
     const gClass = gl === 'high' ? 'glucose-high' : gl === 'medium' ? 'glucose-med' : 'glucose-low';
     glucoseHtml = `
@@ -975,6 +986,30 @@ function renderResult(entry) {
       </div>`;
   }
 
+  // 3. 圓餅圖比例計算
+  const prot = entry.protein || 0;
+  const carb = entry.carbs || 0;
+  const fat = entry.fat || 0;
+  const totalMacros = prot + carb + fat || 1; // 避免除以 0
+  
+  const pProt = (prot / totalMacros) * 100;
+  const pCarb = ((prot + carb) / totalMacros) * 100;
+  
+  const chartHtml = `
+    <div class="macro-chart-box">
+      <div class="pie-chart" style="--p-p:${pProt}%; --p-c:${pCarb}%;"></div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="dot" style="background:var(--accent2)"></div>蛋白質 ${prot}g (${Math.round((prot/totalMacros)*100)}%)</div>
+        <div class="legend-item"><div class="dot" style="background:var(--accent3)"></div>碳水 ${carb}g (${Math.round((carb/totalMacros)*100)}%)</div>
+        <div class="legend-item"><div class="dot" style="background:var(--primary)"></div>脂肪 ${fat}g (${Math.round((fat/totalMacros)*100)}%)</div>
+      </div>
+    </div>
+  `;
+
+  // 4. DGA 警示 HTML
+  const dgaHtml = entry.dgaWarning ? `<div class="dga-warning">⚠️ <span><b>2025-2030 美國飲食指南 (DGA) 提醒：</b><br>${entry.dgaWarning}</span></div>` : '';
+
+  // 5. 組合渲染
   document.getElementById('resultCard').innerHTML = `
     <div class="result-header${isManual ? ' manual' : ''}">
       <span>${isManual ? '✏️' : '✦'}</span>
@@ -984,12 +1019,13 @@ function renderResult(entry) {
     <div class="result-macros">
       <div class="macro-item"><div class="macro-val" style="color:var(--accent)">${entry.calories}</div><div class="macro-label">大卡</div></div>
       <div class="macro-item"><div class="macro-val" style="color:var(--accent2)">${entry.protein}g</div><div class="macro-label">蛋白質</div></div>
-      <div class="macro-item"><div class="macro-val" style="color:#ffb86e">${entry.carbs || 0}g</div><div class="macro-label">碳水</div></div>
-      <div class="macro-item"><div class="macro-val" style="color:#ff9eb5">${entry.fat || 0}g</div><div class="macro-label">脂肪</div></div>
+      <div class="macro-item"><div class="macro-val" style="color:#d4a71b">${entry.carbs || 0}g</div><div class="macro-label">碳水</div></div>
+      <div class="macro-item"><div class="macro-val" style="color:var(--primary)">${entry.fat || 0}g</div><div class="macro-label">脂肪</div></div>
     </div>
-    ${confHtml}
+    ${chartHtml}
+    ${dgaHtml}
     ${glucoseHtml}
-    <div class="food-list"><div class="food-list-title">食材明細（含估算份量）</div>${foods || '<div style="color:var(--muted);font-size:13px">無明細</div>'}</div>
+    <div class="food-list"><div class="food-list-title">食材明細</div>${foods || '<div style="color:var(--muted);font-size:13px">無明細</div>'}</div>
     ${entry.note ? `<div class="result-note">💡 ${entry.note}</div>` : ''}
   `;
   document.getElementById('resultCard').style.display = 'block';
@@ -1061,7 +1097,7 @@ function renderDayView() {
       <div class="summary-macros">
         <div class="summary-macro"><div class="summary-val" style="color:var(--accent)">${cal}</div><div class="summary-lbl">大卡</div></div>
         <div class="summary-macro"><div class="summary-val" style="color:var(--accent2)">${prot}g</div><div class="summary-lbl">蛋白質</div></div>
-        <div class="summary-macro"><div class="summary-val" style="color:#c8c8e8">${recs.length}</div><div class="summary-lbl">筆</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:var(--text)">${recs.length}</div><div class="summary-lbl">筆</div></div>
       </div>
     </div>` : '';
 
@@ -1098,7 +1134,7 @@ function renderMonthView() {
       <div class="chart-area">
         ${dayData.map(x => `
           <div class="chart-col clickable" onclick="jumpDay('${x.k}')">
-            <div class="chart-bar" style="height:${Math.max(x.cal/maxCal*72, x.cal>0?3:0)}px"></div>
+            <div class="chart-bar" style="height:${Math.max(x.cal/maxCal*80, x.cal>0?4:0)}px"></div>
             <div class="chart-lbl">${x.d}</div>
           </div>`).join('')}
       </div>
@@ -1110,7 +1146,7 @@ function renderMonthView() {
       <div class="summary-macros">
         <div class="summary-macro"><div class="summary-val" style="color:var(--accent)">${totalCal}</div><div class="summary-lbl">總大卡</div></div>
         <div class="summary-macro"><div class="summary-val" style="color:var(--accent2)">${totalProt}g</div><div class="summary-lbl">總蛋白</div></div>
-        <div class="summary-macro"><div class="summary-val" style="color:#c8c8e8">${daysWithData>0?Math.round(totalCal/daysWithData):0}</div><div class="summary-lbl">日均卡</div></div>
+        <div class="summary-macro"><div class="summary-val" style="color:var(--text)">${daysWithData>0?Math.round(totalCal/daysWithData):0}</div><div class="summary-lbl">日均卡</div></div>
       </div>
     </div>`;
 
@@ -1139,13 +1175,13 @@ function showExportModal() {
   const modal = document.createElement('div'); modal.id = 'exportModal';
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;flex-direction:column;padding:20px;';
   modal.innerHTML = `
-    <div style="background:var(--card);border-radius:16px;padding:20px;flex:1;display:flex;flex-direction:column;max-height:100%;overflow:hidden;">
-      <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:6px;">📤 備份資料</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:14px;">共 ${days} 天、${total} 筆紀錄</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;">👇 長按下方文字全選，複製後貼到記事本或 iCloud 備份</div>
-      <textarea id="exportTextarea" readonly style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:11px;font-family:monospace;resize:none;outline:none;overflow-y:auto;">${data}</textarea>
-      <button onclick="copyExportData()" style="margin-top:12px;width:100%;background:var(--accent);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">📋 複製全部資料</button>
-      <button onclick="closeExportModal()" style="margin-top:8px;width:100%;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;cursor:pointer;">關閉</button>
+    <div style="background:var(--card);border-radius:24px;padding:24px;flex:1;display:flex;flex-direction:column;max-height:100%;overflow:hidden;">
+      <div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text);">📤 備份資料</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;font-weight:500;">共 ${days} 天、${total} 筆紀錄</div>
+      <div style="font-size:12px;color:var(--accent2);margin-bottom:10px;font-weight:700;">👇 長按下方文字全選，複製後貼到記事本備份</div>
+      <textarea id="exportTextarea" readonly style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-size:12px;font-family:monospace;resize:none;outline:none;overflow-y:auto;">${data}</textarea>
+      <button onclick="copyExportData()" style="margin-top:16px;width:100%;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:14px;font-family:Syne,sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow: 0 4px 10px rgba(78,204,148,0.3);">📋 複製全部資料</button>
+      <button onclick="closeExportModal()" style="margin-top:10px;width:100%;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;">關閉</button>
     </div>`;
   document.body.appendChild(modal);
   setTimeout(() => { const ta = document.getElementById('exportTextarea'); ta.select(); ta.setSelectionRange(0, 99999); }, 300);
@@ -1162,20 +1198,20 @@ function showImportModal() {
   const modal = document.createElement('div'); modal.id = 'importModal';
   modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:flex-end;padding:16px;';
   modal.innerHTML = `
-    <div style="background:var(--card);border-radius:20px 20px 16px 16px;padding:20px;width:100%;max-height:85vh;overflow-y:auto;">
-      <div style="font-family:Syne,sans-serif;font-size:16px;font-weight:800;margin-bottom:6px;">📥 匯入資料備份</div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;">將之前匯出的 JSON 資料貼到下方，選擇匯入方式後按確認。</div>
-      <div style="margin-bottom:12px;">
-        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;">匯入方式</div>
-        <div style="display:flex;gap:8px;">
-          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;"><input type="radio" name="importMode" value="merge" checked style="accent-color:var(--accent)"><div><div style="font-size:13px;font-weight:600;">合併</div><div style="font-size:11px;color:var(--muted);">新資料加入現有紀錄</div></div></label>
-          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:8px;"><input type="radio" name="importMode" value="replace" style="accent-color:var(--accent)"><div><div style="font-size:13px;font-weight:600;">取代</div><div style="font-size:11px;color:var(--muted);">清除現有，完全替換</div></div></label>
+    <div style="background:var(--card);border-radius:24px 24px 16px 16px;padding:24px;width:100%;max-height:85vh;overflow-y:auto;">
+      <div style="font-family:Syne,sans-serif;font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text);">📥 匯入資料備份</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7;font-weight:500;">將之前匯出的 JSON 資料貼到下方，選擇匯入方式後按確認。</div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;">匯入方式</div>
+        <div style="display:flex;gap:10px;">
+          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;"><input type="radio" name="importMode" value="merge" checked style="accent-color:var(--accent)"><div><div style="font-size:14px;font-weight:700;color:var(--text);">合併</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">新資料加入現有紀錄</div></div></label>
+          <label style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:10px;"><input type="radio" name="importMode" value="replace" style="accent-color:var(--accent)"><div><div style="font-size:14px;font-weight:700;color:var(--text);">取代</div><div style="font-size:11px;color:var(--danger);margin-top:2px;">清除現有，完全替換</div></div></label>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">貼上備份的 JSON 資料</div>
-      <textarea id="importTextarea" placeholder='貼上備份的 JSON 資料，格式如：{"2026-03-17":[...]}' style="width:100%;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;color:var(--text);font-size:12px;font-family:monospace;resize:none;outline:none;margin-bottom:12px;"></textarea>
-      <button onclick="confirmImport()" style="width:100%;background:var(--accent2);color:#0a0a0f;border:none;border-radius:10px;padding:13px;font-family:Syne,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">✅ 確認匯入</button>
-      <button onclick="closeImportModal()" style="width:100%;margin-top:8px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:13px;cursor:pointer;">取消</button>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;">貼上備份的 JSON 資料</div>
+      <textarea id="importTextarea" placeholder='貼上備份的 JSON 資料，格式如：{"2026-03-17":[...]}' style="width:100%;height:160px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;color:var(--text);font-size:12px;font-family:monospace;resize:none;outline:none;margin-bottom:16px;"></textarea>
+      <button onclick="confirmImport()" style="width:100%;background:var(--accent2);color:#fff;border:none;border-radius:12px;padding:14px;font-family:Syne,sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow: 0 4px 10px rgba(107,181,255,0.3);">✅ 確認匯入</button>
+      <button onclick="closeImportModal()" style="width:100%;margin-top:10px;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;">取消</button>
     </div>`;
   document.body.appendChild(modal);
 }
@@ -1232,7 +1268,7 @@ function clearAllData() {
 }
 
 // ═══════════════════════════════════════════════
-// ☁️ 從 Google 試算表同步資料 (已確保在 script 裡面)
+// ☁️ 從 Google 試算表同步資料
 // ═══════════════════════════════════════════════
 async function syncFromGoogleSheet() {
   if (typeof GOOGLE_SHEET_URL === 'undefined' || !GOOGLE_SHEET_URL.startsWith('http')) {
@@ -1266,6 +1302,7 @@ async function syncFromGoogleSheet() {
           fat: Number(row.fat) || 0,
           foods: [],
           note: row.note || '',
+          dgaWarning: '', // Google Sheet 舊資料可能無此欄位
           time: String(row.time).split(' ').pop()
         });
         importedCount++;
